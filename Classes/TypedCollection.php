@@ -3,10 +3,7 @@ declare(strict_types=1);
 
 namespace Iresults\Collection;
 
-
-use Iresults\Collection\Exception\InvalidArgumentTypeException;
-
-class TypedCollection extends AbstractCollection
+class TypedCollection extends AbstractTypedCollection
 {
     /**
      * @var string
@@ -51,52 +48,6 @@ class TypedCollection extends AbstractCollection
     }
 
     /**
-     * Returns the managed type
-     *
-     * @return string
-     */
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function offsetSet($index, $newValue)
-    {
-        $this->validateElementType($this->type, $newValue);
-        parent::offsetSet($index, $newValue);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function append($value): CollectionInterface
-    {
-        $this->validateElementType($this->type, $value);
-        $this->items[] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function merge(... $arguments): CollectionInterface
-    {
-        return static::collectionWithTypeAndData($this->type, $this->mergeArguments($arguments));
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function map(callable $callback): CollectionInterface
-    {
-        return new Collection(array_map($callback, $this->getArrayCopy()));
-    }
-
-    /**
      * Applies the callback to the elements of the collection
      *
      * The method returns a new Typed Collection containing all the elements of the collection after applying the callback function to each one.
@@ -116,62 +67,27 @@ class TypedCollection extends AbstractCollection
     /**
      * @inheritdoc
      */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function merge(... $arguments): CollectionInterface
+    {
+        return static::collectionWithTypeAndData($this->type, $this->mergeArguments($arguments));
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function filter(callable $callback, $flag = 0): CollectionInterface
     {
         return static::collectionWithTypeAndData(
             $this->type,
             array_filter($this->getArrayCopy(), $callback, $flag)
         );
-    }
-
-    /**
-     * @param string             $type
-     * @param array|\Traversable $elements
-     */
-    protected static function assertValidateElementsType(string $type, $elements)
-    {
-        foreach ($elements as $element) {
-            static::validateElementType($type, $element);
-        }
-    }
-
-    /**
-     * @param string $type
-     * @param mixed  $element
-     * @throws InvalidArgumentTypeException
-     */
-    protected static function validateElementType(string $type, $element)
-    {
-        if (!is_a($element, $type)) {
-            $exceptionMessage = sprintf(
-                'Element is not of expected type %s, %s given',
-                $type,
-                static::detectType($element)
-            );
-            throw new InvalidArgumentTypeException($exceptionMessage);
-        }
-    }
-
-    /**
-     * @param mixed $element
-     * @return string
-     */
-    protected static function detectType($element)
-    {
-        return is_object($element) ? get_class($element) : gettype($element);
-    }
-
-
-    /**
-     * @param $input
-     * @throws InvalidArgumentTypeException
-     */
-    protected static function assertValidInput($input)
-    {
-        if (!is_array($input) && !($input instanceof \Traversable)) {
-            throw new InvalidArgumentTypeException(
-                'Input must be either an array or an object'
-            );
-        }
     }
 }

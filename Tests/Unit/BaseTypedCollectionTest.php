@@ -5,23 +5,23 @@ namespace Iresults\Collection\Tests\Unit;
 
 
 use ArrayObject;
+use Iresults\Collection\BaseTypedCollection;
 use Iresults\Collection\Collection;
 use Iresults\Collection\Tests\Unit\Fixtures\Address;
 use Iresults\Collection\Tests\Unit\Fixtures\Person;
-use Iresults\Collection\TypedCollection;
+use Iresults\Collection\Tests\Unit\Fixtures\PersonCollection;
 use PHPUnit\Framework\TestCase;
 
-class TypedCollectionTest extends TestCase
+class BaseTypedCollectionTest extends TestCase
 {
     /**
-     * @var TypedCollection
+     * @var BaseTypedCollection
      */
     protected $fixture;
 
     protected function setUp()
     {
-        $this->fixture = TypedCollection::collectionWithTypeAndData(
-            Person::class,
+        $this->fixture = new PersonCollection(
             [new Person('Daniel'), new Person('Gert'), new Person('Loren')]
         );
     }
@@ -37,7 +37,7 @@ class TypedCollectionTest extends TestCase
     public function createWithObjectTest()
     {
         $inputArray = [new Person('Daniel'), new Person('Gert'), new Person('Loren')];
-        $collection = TypedCollection::collectionWithTypeAndData(Person::class, new ArrayObject($inputArray));
+        $collection = new PersonCollection(new ArrayObject($inputArray));
 
         $this->assertEquals($inputArray, $collection->getArrayCopy());
     }
@@ -49,7 +49,7 @@ class TypedCollectionTest extends TestCase
      */
     public function throwForInvalidInputTest()
     {
-        TypedCollection::collectionWithTypeAndData(Person::class, 123);
+        new PersonCollection(123);
     }
 
     /**
@@ -59,7 +59,7 @@ class TypedCollectionTest extends TestCase
      */
     public function throwForInvalidClassInputTest()
     {
-        TypedCollection::collectionWithTypeAndData(Person::class, 'NotAClass');
+        new PersonCollection('NotAClass');
     }
 
     /**
@@ -69,7 +69,7 @@ class TypedCollectionTest extends TestCase
      */
     public function throwEmptyInputTest()
     {
-        TypedCollection::collectionWithTypeAndData(Person::class, null);
+        new PersonCollection(null);
     }
 
     /**
@@ -78,7 +78,7 @@ class TypedCollectionTest extends TestCase
      */
     public function throwForMixedElementsTest()
     {
-        TypedCollection::collectionWithTypeAndData(Person::class, [new Person(), new Person(), new Address()]);
+        new PersonCollection([new Person(), new Person(), new Address()]);
     }
 
     /**
@@ -111,7 +111,8 @@ class TypedCollectionTest extends TestCase
                 return new Person(strtoupper($item->getName()));
             }
         );
-        $this->assertInstanceOf(TypedCollection::class, $result);
+        $this->assertInstanceOf(BaseTypedCollection::class, $result);
+        $this->assertInstanceOf(PersonCollection::class, $result);
         $this->assertSame(3, $result->count());
         $this->assertSame('Daniel,Gert,Loren', $this->fixture->implode(','));
     }
@@ -127,27 +128,10 @@ class TypedCollectionTest extends TestCase
             },
             $flag = 0
         );
-        $this->assertInstanceOf(TypedCollection::class, $result);
+        $this->assertInstanceOf(BaseTypedCollection::class, $result);
+        $this->assertInstanceOf(PersonCollection::class, $result);
         $this->assertSame(1, $result->count());
         $this->assertEquals([1 => new Person('Gert')], $result->getArrayCopy());
-    }
-
-    /**
-     * @test
-     * @expectedException \Iresults\Collection\Exception\InvalidArgumentTypeException
-     */
-    public function offsetSetTest()
-    {
-        $this->fixture['offset'] = 'not a person instance';
-    }
-
-    /**
-     * @test
-     * @expectedException \Iresults\Collection\Exception\InvalidArgumentTypeException
-     */
-    public function appendTest()
-    {
-        $this->fixture->append('not a person instance');
     }
 
     /**
@@ -159,8 +143,48 @@ class TypedCollectionTest extends TestCase
             [new Person(), new Person(), new Person()],
             [new Person(), new Person(), new Person()]
         );
-        $this->assertInstanceOf(TypedCollection::class, $result);
+        $this->assertInstanceOf(BaseTypedCollection::class, $result);
         $this->assertSame(9, $result->count());
+    }
+
+    /**
+     * @test
+     */
+    public function offsetSetTest()
+    {
+        $person = new Person();
+        $this->fixture['offset'] = $person;
+        $this->assertCount(4, $this->fixture);
+        $this->assertSame($person, $this->fixture['offset']);
+    }
+
+    /**
+     * @test
+     * @expectedException \Iresults\Collection\Exception\InvalidArgumentTypeException
+     */
+    public function offsetSetShouldFailForWrongTypeTest()
+    {
+        $this->fixture['offset'] = 'not a person instance';
+    }
+
+    /**
+     * @test
+     */
+    public function appendTest()
+    {
+        $person = new Person();
+        $this->fixture->append($person);
+        $this->assertCount(4, $this->fixture);
+        $this->assertSame($person, $this->fixture[$this->fixture->count() - 1]);
+    }
+
+    /**
+     * @test
+     * @expectedException \Iresults\Collection\Exception\InvalidArgumentTypeException
+     */
+    public function appendShouldFailForWrongTypeTest()
+    {
+        $this->fixture->append('not a person instance');
     }
 
     /**
