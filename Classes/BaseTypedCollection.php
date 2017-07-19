@@ -11,7 +11,7 @@ abstract class BaseTypedCollection extends AbstractTypedCollection
     /**
      * @param array|\Traversable $data
      */
-    public function __construct($data)
+    public function __construct($data = [])
     {
         static::assertValidInput($data);
 
