@@ -170,26 +170,6 @@ class BaseTypedCollectionTest extends TestCase
     /**
      * @test
      */
-    public function appendTest()
-    {
-        $person = new Person();
-        $this->fixture->append($person);
-        $this->assertCount(4, $this->fixture);
-        $this->assertSame($person, $this->fixture[$this->fixture->count() - 1]);
-    }
-
-    /**
-     * @test
-     * @expectedException \Iresults\Collection\Exception\InvalidArgumentTypeException
-     */
-    public function appendShouldFailForWrongTypeTest()
-    {
-        $this->fixture->append('not a person instance');
-    }
-
-    /**
-     * @test
-     */
     public function implodeTest()
     {
         $this->assertSame('DanielGertLoren', $this->fixture->implode());

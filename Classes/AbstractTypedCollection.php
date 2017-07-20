@@ -25,17 +25,6 @@ abstract class AbstractTypedCollection extends AbstractCollection
     }
 
     /**
-     * @inheritdoc
-     */
-    public function append($value): CollectionInterface
-    {
-        $this->validateElementType($this->getType(), $value);
-        $this->items[] = $value;
-
-        return $this;
-    }
-
-    /**
      * @inheritDoc
      */
     public function merge(... $arguments): CollectionInterface

@@ -143,15 +143,6 @@ class TypedCollectionTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Iresults\Collection\Exception\InvalidArgumentTypeException
-     */
-    public function appendTest()
-    {
-        $this->fixture->append('not a person instance');
-    }
-
-    /**
-     * @test
      */
     public function multiMergeTest()
     {

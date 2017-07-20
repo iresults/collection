@@ -34,6 +34,16 @@ class CollectionTest extends TestCase
     /**
      * @test
      */
+    public function fromCollectionTest()
+    {
+        $items = ['a', 'b', 'c'];
+        $this->fixture = new Collection(new Collection($items));
+        $this->assertSame($items, $this->fixture->getArrayCopy());
+    }
+
+    /**
+     * @test
+     */
     public function mapTest()
     {
         $result = $this->fixture->map(

@@ -9,13 +9,11 @@ namespace Iresults\Collection;
 class Collection extends AbstractCollection
 {
     /**
-     * AbstractCollection constructor.
-     *
-     * @param array $items
+     * @inheritdoc
      */
-    function __construct($items = [])
+    public function __construct($items = [])
     {
-        $this->items = $items;
+        parent::__construct($items);
     }
 
     /**
