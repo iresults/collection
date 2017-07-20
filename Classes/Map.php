@@ -49,7 +49,7 @@ class Map implements Iterator, MapInterface
     /**
      * @inheritdoc
      */
-    public static function createWithPairs(...$pairs): MapInterface
+    public static function withPairs(...$pairs): MapInterface
     {
         foreach ($pairs as $pair) {
             static::assertPair($pair);

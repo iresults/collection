@@ -14,7 +14,7 @@ interface MapInterface extends CollectionInterface
      * @param array $pairs
      * @return MapInterface
      */
-    public static function createWithPairs(...$pairs): MapInterface;
+    public static function withPairs(...$pairs): MapInterface;
 
     /**
      * Returns the array of key objects

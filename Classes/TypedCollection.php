@@ -24,7 +24,7 @@ class TypedCollection extends AbstractTypedCollection
      * @param array|\Traversable $data
      * @return TypedCollection
      */
-    public static function collectionWithTypeAndData(string $type, $data): TypedCollection
+    public static function withTypeAndData(string $type, $data): TypedCollection
     {
         $instance = new static();
         $instance->type = $type;
@@ -42,9 +42,9 @@ class TypedCollection extends AbstractTypedCollection
      * @param string $type
      * @return TypedCollection
      */
-    public static function collectionWithType(string $type): TypedCollection
+    public static function withType(string $type): TypedCollection
     {
-        return static::collectionWithTypeAndData($type, []);
+        return static::withTypeAndData($type, []);
     }
 
     /**
@@ -58,7 +58,7 @@ class TypedCollection extends AbstractTypedCollection
      */
     public function mapTyped(callable $callback, string $targetType = null)
     {
-        return static::collectionWithTypeAndData(
+        return static::withTypeAndData(
             $targetType ?? $this->type,
             array_map($callback, $this->getArrayCopy())
         );
@@ -77,7 +77,7 @@ class TypedCollection extends AbstractTypedCollection
      */
     public function merge(... $arguments): CollectionInterface
     {
-        return static::collectionWithTypeAndData($this->type, $this->mergeArguments($arguments));
+        return static::withTypeAndData($this->type, $this->mergeArguments($arguments));
     }
 
     /**
@@ -85,7 +85,7 @@ class TypedCollection extends AbstractTypedCollection
      */
     public function filter(callable $callback, $flag = 0): CollectionInterface
     {
-        return static::collectionWithTypeAndData(
+        return static::withTypeAndData(
             $this->type,
             array_filter($this->getArrayCopy(), $callback, $flag)
         );

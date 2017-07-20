@@ -20,7 +20,7 @@ class TypedCollectionTest extends TestCase
 
     protected function setUp()
     {
-        $this->fixture = TypedCollection::collectionWithTypeAndData(
+        $this->fixture = TypedCollection::withTypeAndData(
             Person::class,
             [new Person('Daniel'), new Person('Gert'), new Person('Loren')]
         );
@@ -37,7 +37,7 @@ class TypedCollectionTest extends TestCase
     public function createWithObjectTest()
     {
         $inputArray = [new Person('Daniel'), new Person('Gert'), new Person('Loren')];
-        $collection = TypedCollection::collectionWithTypeAndData(Person::class, new ArrayObject($inputArray));
+        $collection = TypedCollection::withTypeAndData(Person::class, new ArrayObject($inputArray));
 
         $this->assertEquals($inputArray, $collection->getArrayCopy());
     }
@@ -49,7 +49,7 @@ class TypedCollectionTest extends TestCase
      */
     public function throwForInvalidInputTest()
     {
-        TypedCollection::collectionWithTypeAndData(Person::class, 123);
+        TypedCollection::withTypeAndData(Person::class, 123);
     }
 
     /**
@@ -59,7 +59,7 @@ class TypedCollectionTest extends TestCase
      */
     public function throwForInvalidClassInputTest()
     {
-        TypedCollection::collectionWithTypeAndData(Person::class, 'NotAClass');
+        TypedCollection::withTypeAndData(Person::class, 'NotAClass');
     }
 
     /**
@@ -69,7 +69,7 @@ class TypedCollectionTest extends TestCase
      */
     public function throwEmptyInputTest()
     {
-        TypedCollection::collectionWithTypeAndData(Person::class, null);
+        TypedCollection::withTypeAndData(Person::class, null);
     }
 
     /**
@@ -78,7 +78,7 @@ class TypedCollectionTest extends TestCase
      */
     public function throwForMixedElementsTest()
     {
-        TypedCollection::collectionWithTypeAndData(Person::class, [new Person(), new Person(), new Address()]);
+        TypedCollection::withTypeAndData(Person::class, [new Person(), new Person(), new Address()]);
     }
 
     /**

@@ -25,7 +25,7 @@ class Collection extends AbstractCollection
      * @param string $input
      * @return CollectionInterface
      */
-    public static function createFromString(string $delimiter, string $input): CollectionInterface
+    public static function fromString(string $delimiter, string $input): CollectionInterface
     {
         if ($input === '') {
             return new static();

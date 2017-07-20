@@ -396,7 +396,7 @@ class MapTest extends TestCase
      */
     public function createWithPairTest()
     {
-        $map = Map::createWithPairs(
+        $map = Map::withPairs(
             [new stdClass(), 'a'],
             [new stdClass(), 'b'],
             [new stdClass(), 'c']
@@ -410,7 +410,7 @@ class MapTest extends TestCase
      */
     public function createWithInvalidPairTest()
     {
-        $map = Map::createWithPairs(
+        $map = Map::withPairs(
             new stdClass(),
             [new stdClass(), 'b'],
             [new stdClass(), 'c']

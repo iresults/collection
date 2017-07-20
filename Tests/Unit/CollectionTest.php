@@ -103,7 +103,7 @@ class CollectionTest extends TestCase
      */
     public function createFromStringTest()
     {
-        $result = Collection::createFromString(',', 'a,b,c');
+        $result = Collection::fromString(',', 'a,b,c');
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(3, $result->count());
         $this->assertSame(['a', 'b', 'c'], $result->getArrayCopy());
@@ -114,7 +114,7 @@ class CollectionTest extends TestCase
      */
     public function createFromStringSingleElementTest()
     {
-        $result = Collection::createFromString(',', 'a');
+        $result = Collection::fromString(',', 'a');
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(1, $result->count());
         $this->assertSame(['a'], $result->getArrayCopy());
@@ -125,7 +125,7 @@ class CollectionTest extends TestCase
      */
     public function createFromStringWithEmptyStringTest()
     {
-        $result = Collection::createFromString(',', '');
+        $result = Collection::fromString(',', '');
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(0, $result->count());
         $this->assertSame([], $result->getArrayCopy());
