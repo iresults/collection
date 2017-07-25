@@ -9,14 +9,14 @@ namespace Iresults\Collection;
 abstract class BaseTypedCollection extends AbstractTypedCollection
 {
     /**
-     * @param array|\Traversable $data
+     * @param array|\Traversable $items
      */
-    public function __construct($data = [])
+    public function __construct($items = [])
     {
-        static::assertValidInput($data);
+        static::assertValidInput($items);
 
-        static::assertValidateElementsType($this->getType(), $data);
-        $this->items = is_array($data) ? $data : iterator_to_array($data);
+        static::assertValidateElementsType($this->getType(), $items);
+        parent::__construct($items);
     }
 
     /**
