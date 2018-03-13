@@ -15,34 +15,23 @@ abstract class AbstractTypedCollection extends AbstractCollection
      */
     abstract public function getType(): string;
 
-    /**
-     * @inheritdoc
-     */
+
     public function offsetSet($index, $newValue)
     {
         $this->validateElementType($this->getType(), $newValue);
         parent::offsetSet($index, $newValue);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function merge(... $arguments): CollectionInterface
     {
         return new static($this->mergeArguments($arguments));
     }
 
-    /**
-     * @inheritdoc
-     */
     public function map(callable $callback): CollectionInterface
     {
         return new Collection(array_map($callback, $this->getArrayCopy()));
     }
 
-    /**
-     * @inheritdoc
-     */
     public function filter(callable $callback, $flag = 0): CollectionInterface
     {
         return new static(array_filter($this->getArrayCopy(), $callback, $flag));

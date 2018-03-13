@@ -27,33 +27,21 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
         $this->items = is_array($items) ? $items : iterator_to_array($items);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function merge(... $arguments): CollectionInterface
     {
         return new static($this->mergeArguments($arguments));
     }
 
-    /**
-     * @inheritdoc
-     */
     public function map(callable $callback): CollectionInterface
     {
         return new static(array_map($callback, $this->getArrayCopy()));
     }
 
-    /**
-     * @inheritdoc
-     */
     public function filter(callable $callback, $flag = 0): CollectionInterface
     {
         return new static(array_filter($this->getArrayCopy(), $callback, $flag));
     }
 
-    /**
-     * @inheritdoc
-     */
     public function find(callable $callback)
     {
         foreach ($this->items as $item) {
@@ -65,65 +53,41 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
         return null;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function implode($glue = ''): string
     {
         return implode($glue, $this->getArrayCopy());
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getIterator()
     {
         return new \ArrayIterator($this->items);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function offsetExists($offset)
     {
         return isset($this->items[$offset]);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function offsetGet($offset)
     {
         return $this->items[$offset];
     }
 
-    /**
-     * @inheritDoc
-     */
     public function offsetSet($offset, $value)
     {
         $this->items[$offset] = $value;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function offsetUnset($offset)
     {
         unset($this->items[$offset]);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getArrayCopy(): array
     {
         return $this->items;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function count()
     {
         return count($this->items);

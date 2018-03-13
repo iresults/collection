@@ -4,13 +4,10 @@ declare(strict_types=1);
 namespace Iresults\Collection;
 
 /**
- * Array extension to support array functions
+ * OOP wrapper for arrays
  */
 class Collection extends AbstractCollection
 {
-    /**
-     * @inheritdoc
-     */
     public function __construct($items = [])
     {
         parent::__construct($items);

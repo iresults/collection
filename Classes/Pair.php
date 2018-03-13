@@ -69,7 +69,6 @@ class Pair implements \ArrayAccess
         return $this->getRight();
     }
 
-
     public function offsetExists($offset)
     {
         return is_int($offset) && $offset >= 0 && $offset < 2;

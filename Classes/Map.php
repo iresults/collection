@@ -38,17 +38,11 @@ class Map implements Iterator, MapInterface
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getIterator()
     {
         return new \ArrayIterator($this->getArrayCopy());
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function withPairs(...$pairs): MapInterface
     {
         foreach ($pairs as $pair) {
@@ -58,25 +52,16 @@ class Map implements Iterator, MapInterface
         return new static($pairs);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getArrayCopy(): array
     {
         return $this->hashToValueMap;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getKeys(): array
     {
         return $this->hashToKeyObjectMap;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function current()
     {
         $currentKey = $this->hashKey();
@@ -87,65 +72,41 @@ class Map implements Iterator, MapInterface
         return null;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function next()
     {
         next($this->hashToKeyObjectMap);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function key()
     {
         return current($this->hashToKeyObjectMap);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function hashKey()
     {
         return key($this->hashToKeyObjectMap);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function valid()
     {
         return (current($this->hashToKeyObjectMap) !== false);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function rewind()
     {
         reset($this->hashToKeyObjectMap);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function offsetExists($offset)
     {
         return isset($this->hashToKeyObjectMap[$this->hash($offset)]);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function exists($keyObject): bool
     {
         return $this->offsetExists($keyObject);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function offsetGet($offset)
     {
         if (!$this->offsetExists($offset)) {
@@ -155,17 +116,11 @@ class Map implements Iterator, MapInterface
         return $this->hashToValueMap[$this->hash($offset)];
     }
 
-    /**
-     * @inheritdoc
-     */
     public function get($keyObject)
     {
         return $this->offsetGet($keyObject);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function offsetSet($offset, $value)
     {
         $hash = $this->hash($offset);
@@ -173,17 +128,11 @@ class Map implements Iterator, MapInterface
         $this->hashToValueMap[$hash] = $value;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function set($keyObject, $value)
     {
         $this->offsetSet($keyObject, $value);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function offsetUnset($offset)
     {
         $hash = $this->hash($offset);
@@ -191,17 +140,11 @@ class Map implements Iterator, MapInterface
         unset($this->hashToValueMap[$hash]);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function count()
     {
         return count($this->hashToKeyObjectMap);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function map(callable $callback): CollectionInterface
     {
         $result = new static();
@@ -223,7 +166,6 @@ class Map implements Iterator, MapInterface
         return null;
     }
 
-
     public function findPair(callable $callback)
     {
         foreach ($this as $keyObject => $value) {
@@ -236,9 +178,6 @@ class Map implements Iterator, MapInterface
         return null;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function filter(callable $callback, $flag = 0): CollectionInterface
     {
         $result = new static();
@@ -251,9 +190,6 @@ class Map implements Iterator, MapInterface
         return $result;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function implode($glue = ''): string
     {
         return implode($glue, $this->getArrayCopy());

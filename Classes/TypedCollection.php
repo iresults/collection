@@ -64,25 +64,16 @@ class TypedCollection extends AbstractTypedCollection
         );
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function merge(... $arguments): CollectionInterface
     {
         return static::withTypeAndData($this->type, $this->mergeArguments($arguments));
     }
 
-    /**
-     * @inheritdoc
-     */
     public function filter(callable $callback, $flag = 0): CollectionInterface
     {
         return static::withTypeAndData(
