@@ -212,6 +212,30 @@ class Map implements Iterator, MapInterface
         return $result;
     }
 
+    public function find(callable $callback)
+    {
+        foreach ($this as $keyObject => $value) {
+            if ($callback($value)) {
+                return $value;
+            }
+        }
+
+        return null;
+    }
+
+
+    public function findPair(callable $callback)
+    {
+        foreach ($this as $keyObject => $value) {
+            $pair = new Pair($keyObject, $value);
+            if ($callback($pair)) {
+                return $pair;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * @inheritdoc
      */

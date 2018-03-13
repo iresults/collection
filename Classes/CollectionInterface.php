@@ -56,6 +56,17 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
     public function filter(callable $callback, $flag = 0): CollectionInterface;
 
     /**
+     * Return the first element of the Collection for which callback returns TRUE.
+     *
+     * Iterates over each value in the Collection passing them to the callback function.
+     * If the callback function returns true, the current value is returned. If no match is found NULL is returned.
+     *
+     * @param callable $callback The callback function to use
+     * @return mixed
+     */
+    public function find(callable $callback);
+
+    /**
      * Join array elements with a string
      *
      * @param string $glue

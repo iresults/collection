@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Iresults\Collection;
 
 /**
- * Array extension to support array functions
+ * Interface for collections that can be merged
  */
 interface MergeableInterface
 {

@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Iresults\Collection\Tests\Unit;
 
-
 use ArrayObject;
 use Iresults\Collection\BaseTypedCollection;
 use Iresults\Collection\Collection;
@@ -22,7 +21,11 @@ class BaseTypedCollectionTest extends TestCase
     protected function setUp()
     {
         $this->fixture = new PersonCollection(
-            [new Person('Daniel'), new Person('Gert'), new Person('Loren')]
+            [
+                new Person('Daniel'),
+                new Person('Gert'),
+                new Person('Loren'),
+            ]
         );
     }
 

@@ -46,4 +46,15 @@ interface MapInterface extends CollectionInterface
      * @param mixed         $value
      */
     public function set($keyObject, $value);
+
+    /**
+     * Return the first key-value pair of the Collection for which callback returns TRUE.
+     *
+     * Iterates over each value in the Collection passing them to the callback function.
+     * If the callback function returns true, the current value is returned. If no match is found NULL is returned.
+     *
+     * @param callable $callback The callback function to use
+     * @return Pair|null
+     */
+    public function findPair(callable $callback);
 }

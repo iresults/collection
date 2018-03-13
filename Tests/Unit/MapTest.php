@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Iresults\Collection\Tests\Unit;
 
-
 use Iresults\Collection\CollectionInterface;
 use Iresults\Collection\Map;
+use Iresults\Collection\Pair;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -228,8 +228,103 @@ class MapTest extends TestCase
         unset($this->fixture[$object]);
         $this->assertNull($this->fixture->offsetGet($object));
         $this->assertNull($this->fixture[$object]);
+    }
 
+    /**
+     * @test
+     */
+    public function findTest()
+    {
+        $this->fixture = new Map(
+            [
+                [(object)["character" => 'a'], (object)["number" => 10]],
+                [(object)["character" => 'b'], (object)["number" => 20]],
+                [(object)["character" => 'c'], (object)["number" => 30]],
+                [(object)["character" => 'd'], (object)["number" => 40]],
+            ]
+        );
 
+        $result = $this->fixture->find(
+            function (stdClass $value) {
+                return $value->number > 20;
+            }
+        );
+
+        $this->assertInstanceOf(stdClass::class, $result);
+        $this->assertSame($result->number, 30);
+    }
+
+    /**
+     * @test
+     */
+    public function findNoneTest()
+    {
+        $this->fixture = new Map(
+            [
+                [(object)["character" => 'a'], (object)["number" => 10]],
+                [(object)["character" => 'b'], (object)["number" => 20]],
+                [(object)["character" => 'c'], (object)["number" => 30]],
+                [(object)["character" => 'd'], (object)["number" => 40]],
+            ]
+        );
+
+        $result = $this->fixture->find(
+            function (stdClass $value) {
+                return $value->number > 40;
+            }
+        );
+
+        $this->assertNull($result);
+    }
+
+    /**
+     * @test
+     */
+    public function findPairTest()
+    {
+        $this->fixture = new Map(
+            [
+                [(object)["character" => 'a'], (object)["number" => 10]],
+                [(object)["character" => 'b'], (object)["number" => 20]],
+                [(object)["character" => 'c'], (object)["number" => 30]],
+                [(object)["character" => 'd'], (object)["number" => 40]],
+            ]
+        );
+
+        $result = $this->fixture->findPair(
+            function (Pair $pair) {
+                return $pair->getValue()->number > 20;
+            }
+        );
+
+        $this->assertInstanceOf(Pair::class, $result);
+        $this->assertInstanceOf(stdClass::class, $result->getValue());
+        $this->assertSame($result->getValue()->number, 30);
+        $this->assertInstanceOf(stdClass::class, $result->getKey());
+        $this->assertSame($result->getKey()->character, 'c');
+    }
+
+    /**
+     * @test
+     */
+    public function findPairNoneTest()
+    {
+        $this->fixture = new Map(
+            [
+                [(object)["character" => 'a'], (object)["number" => 10]],
+                [(object)["character" => 'b'], (object)["number" => 20]],
+                [(object)["character" => 'c'], (object)["number" => 30]],
+                [(object)["character" => 'd'], (object)["number" => 40]],
+            ]
+        );
+
+        $result = $this->fixture->findPair(
+            function (Pair $pair) {
+                return $pair->getValue()->number > 40;
+            }
+        );
+
+        $this->assertNull($result);
     }
 
     /**

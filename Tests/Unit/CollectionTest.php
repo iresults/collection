@@ -1,15 +1,7 @@
 <?php
 declare(strict_types=1);
 
-
-/**
- * @author COD
- * Created 15.09.15 12:21
- */
-
-
 namespace Iresults\Collection\Tests\Unit;
-
 
 use Iresults\Collection\Collection;
 use PHPUnit\Framework\TestCase;
@@ -75,6 +67,34 @@ class CollectionTest extends TestCase
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(1, $result->count());
         $this->assertSame(['a'], $result->getArrayCopy());
+    }
+
+    /**
+     * @test
+     */
+    public function findTest()
+    {
+        $this->fixture = new Collection([10, 20, 30, 40]);
+        $result = $this->fixture->find(
+            function ($item) {
+                return $item > 20;
+            }
+        );
+        $this->assertSame(30, $result);
+    }
+
+    /**
+     * @test
+     */
+    public function findNoneTest()
+    {
+        $this->fixture = new Collection([10, 20, 30, 40]);
+        $result = $this->fixture->find(
+            function ($item) {
+                return $item > 40;
+            }
+        );
+        $this->assertNull($result);
     }
 
     /**

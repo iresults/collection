@@ -54,6 +54,20 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
     /**
      * @inheritdoc
      */
+    public function find(callable $callback)
+    {
+        foreach ($this->items as $item) {
+            if ($callback($item)) {
+                return $item;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function implode($glue = ''): string
     {
         return implode($glue, $this->getArrayCopy());
