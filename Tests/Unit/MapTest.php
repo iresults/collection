@@ -512,4 +512,70 @@ class MapTest extends TestCase
         );
         $this->assertSame(['a', 'b', 'c'], array_values($map->getArrayCopy()));
     }
+
+    /**
+     * @test
+     */
+    public function sortTest()
+    {
+        $this->runSortTest(
+            function (Map $fixture) {
+                return $fixture->sort(
+                    function ($a, $b) {
+                        // Make sure the value-object is given and *NOT* the key-object
+                        $this->assertFalse(property_exists($a, 'keyObjectProperty'));
+                        $this->assertFalse(property_exists($b, 'keyObjectProperty'));
+
+                        return $a->valueObjectProperty <=> $b->valueObjectProperty;
+                    }
+                );
+            }
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function ksortTest()
+    {
+        $this->runSortTest(
+            function (Map $fixture) {
+                return $fixture->ksort(
+                    function ($a, $b) {
+                        // Make sure the key-object is given and *NOT* the value-object
+                        $this->assertFalse(property_exists($a, 'valueObjectProperty'));
+                        $this->assertFalse(property_exists($b, 'valueObjectProperty'));
+
+                        return $a->keyObjectProperty <=> $b->keyObjectProperty;
+                    }
+                );
+            }
+        );
+    }
+
+    protected function runSortTest(callable $callback)
+    {
+        $this->fixture = new Map(
+            [
+                [(object)["keyObjectProperty" => 'c'], (object)["valueObjectProperty" => 30]],
+                [(object)["keyObjectProperty" => 'b'], (object)["valueObjectProperty" => 20]],
+                [(object)["keyObjectProperty" => 'a'], (object)["valueObjectProperty" => 10]],
+                [(object)["keyObjectProperty" => 'd'], (object)["valueObjectProperty" => 40]],
+            ]
+        );
+
+        /** @var Map $sorted */
+        $sorted = $callback($this->fixture);
+        $this->assertInstanceOf(Map::class, $sorted);
+        $sortedKeyArray = array_values($sorted->getKeys());
+        $sortedArray = array_values($sorted->getArrayCopy());
+        $this->assertSame('a', $sortedKeyArray[0]->keyObjectProperty);
+        $this->assertSame(10, $sortedArray[0]->valueObjectProperty);
+        $this->assertSame('b', $sortedKeyArray[1]->keyObjectProperty);
+        $this->assertSame(20, $sortedArray[1]->valueObjectProperty);
+        $this->assertSame('c', $sortedKeyArray[2]->keyObjectProperty);
+        $this->assertSame(30, $sortedArray[2]->valueObjectProperty);
+        $this->assertSame('d', $sortedKeyArray[3]->keyObjectProperty);
+        $this->assertSame(40, $sortedArray[3]->valueObjectProperty);
+    }
 }

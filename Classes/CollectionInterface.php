@@ -73,4 +73,37 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      * @return string
      */
     public function implode($glue = ''): string;
+
+    /**
+     * Return a sorted copy of the Collection using the callback function to sort by value
+     *
+     * Example for the callback:
+     *
+     * ```
+     *  function($a, $b) {
+     *      return $a->character <=> $b->character;
+     *  }
+     * ```
+     *
+     * @param callable $callback
+     * @return CollectionInterface
+     */
+    public function sort(callable $callback): CollectionInterface;
+
+
+    /**
+     * Return a sorted copy of the Collection using the callback function to sort by key
+     *
+     * Example for the callback:
+     *
+     * ```
+     *  function($a, $b) {
+     *      return $a->character <=> $b->character;
+     *  }
+     * ```
+     *
+     * @param callable $callback
+     * @return CollectionInterface
+     */
+    public function ksort(callable $callback): CollectionInterface;
 }

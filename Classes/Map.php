@@ -145,6 +145,10 @@ class Map implements Iterator, MapInterface
         return count($this->hashToKeyObjectMap);
     }
 
+    /**
+     * @param callable $callback
+     * @return Map
+     */
     public function map(callable $callback): CollectionInterface
     {
         $result = new static();
@@ -178,6 +182,11 @@ class Map implements Iterator, MapInterface
         return null;
     }
 
+    /**
+     * @param callable $callback
+     * @param int      $flag
+     * @return Map
+     */
     public function filter(callable $callback, $flag = 0): CollectionInterface
     {
         $result = new static();
@@ -195,6 +204,39 @@ class Map implements Iterator, MapInterface
         return implode($glue, $this->getArrayCopy());
     }
 
+    /**
+     * @param callable $callback
+     * @return Map
+     */
+    public function sort(callable $callback): CollectionInterface
+    {
+        $values = $this->hashToValueMap;
+        uasort($values, $callback);
+
+        $result = new static();
+        foreach ($values as $hash => $value) {
+            $result->offsetSet($this->hashToKeyObjectMap[$hash], $value);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param callable $callback
+     * @return Map
+     */
+    public function ksort(callable $callback): CollectionInterface
+    {
+        $keyObjectMap = $this->hashToKeyObjectMap;
+        uasort($keyObjectMap, $callback);
+
+        $result = new static();
+        foreach ($keyObjectMap as $hash => $key) {
+            $result->offsetSet($key, $this->hashToValueMap[$hash]);
+        }
+
+        return $result;
+    }
 
     /**
      * @param string|object $variable

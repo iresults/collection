@@ -93,6 +93,22 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
         return count($this->items);
     }
 
+    public function sort(callable $callback): CollectionInterface
+    {
+        $items = $this->items;
+        uasort($items, $callback);
+
+        return new static($items);
+    }
+
+    public function ksort(callable $callback): CollectionInterface
+    {
+        $items = $this->items;
+        uksort($items, $callback);
+
+        return new static($items);
+    }
+
     /**
      * @param array $arguments
      * @return array

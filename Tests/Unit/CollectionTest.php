@@ -160,4 +160,130 @@ class CollectionTest extends TestCase
         $this->assertSame(0, $result->count());
         $this->assertSame([], $result->getArrayCopy());
     }
+
+    /**
+     * @test
+     */
+    public function sortTest()
+    {
+        $this->fixture = new Collection(['x', 'g', 'h', 'a']);
+
+        $result = $this->fixture->sort(
+            function ($a, $b) {
+                return $a <=> $b;
+            }
+        );
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertSame(4, $result->count());
+        $this->assertSame(
+            [
+                3 => 'a',
+                1 => 'g',
+                2 => 'h',
+                0 => 'x',
+            ],
+            $result->getArrayCopy()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function sortObjectsTest()
+    {
+        $o1 = (object)['char' => 'x'];
+        $o2 = (object)['char' => 'g'];
+        $o3 = (object)['char' => 'h'];
+        $o4 = (object)['char' => 'a'];
+        $this->fixture = new Collection([$o1, $o2, $o3, $o4]);
+
+        $result = $this->fixture->sort(
+            function ($a, $b) {
+                return $a->char <=> $b->char;
+            }
+        );
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertSame(4, $result->count());
+        $this->assertSame(
+            [
+                3 => $o4,
+                1 => $o2,
+                2 => $o3,
+                0 => $o1,
+            ],
+            $result->getArrayCopy()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function kortTest()
+    {
+        $o1 = (object)['value' => bin2hex(random_bytes(2))];
+        $o2 = (object)['value' => bin2hex(random_bytes(2))];
+        $o3 = (object)['value' => bin2hex(random_bytes(2))];
+        $o4 = (object)['value' => bin2hex(random_bytes(2))];
+        $this->fixture = new Collection(
+            [
+                'x' => $o1,
+                'g' => $o2,
+                'h' => $o3,
+                'a' => $o4,
+            ]
+        );
+
+        $result = $this->fixture->ksort(
+            function ($a, $b) {
+                return $a <=> $b;
+            }
+        );
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertSame(4, $result->count());
+        $this->assertSame(
+            [
+                'a' => $o4,
+                'g' => $o2,
+                'h' => $o3,
+                'x' => $o1,
+            ],
+            $result->getArrayCopy()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function ksortNumericTest()
+    {
+        $o1 = (object)['value' => bin2hex(random_bytes(2))];
+        $o2 = (object)['value' => bin2hex(random_bytes(2))];
+        $o3 = (object)['value' => bin2hex(random_bytes(2))];
+        $o4 = (object)['value' => bin2hex(random_bytes(2))];
+        $this->fixture = new Collection(
+            [
+                100 => $o1,
+                20  => $o2,
+                32  => $o3,
+                1   => $o4,
+            ]
+        );
+
+        $result = $this->fixture->ksort(
+            function ($a, $b) {
+                return $a <=> $b;
+            }
+        );
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertSame(4, $result->count());
+        $this->assertSame(
+            [
+                1   => $o4,
+                20  => $o2,
+                32  => $o3,
+                100 => $o1,
+            ],
+            $result->getArrayCopy()
+        );
+    }
 }
