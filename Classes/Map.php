@@ -26,7 +26,7 @@ class Map implements Iterator, MapInterface
     private $hashToValueMap = [];
 
     /**
-     * Map constructor.
+     * Map constructor
      *
      * @param array $objects
      */
@@ -147,7 +147,7 @@ class Map implements Iterator, MapInterface
 
     /**
      * @param callable $callback
-     * @return Map
+     * @return static
      */
     public function map(callable $callback): CollectionInterface
     {
@@ -185,7 +185,7 @@ class Map implements Iterator, MapInterface
     /**
      * @param callable $callback
      * @param int      $flag
-     * @return Map
+     * @return static
      */
     public function filter(callable $callback, $flag = 0): CollectionInterface
     {
@@ -206,7 +206,7 @@ class Map implements Iterator, MapInterface
 
     /**
      * @param callable $callback
-     * @return Map
+     * @return static
      */
     public function sort(callable $callback): CollectionInterface
     {
@@ -223,7 +223,7 @@ class Map implements Iterator, MapInterface
 
     /**
      * @param callable $callback
-     * @return Map
+     * @return static
      */
     public function ksort(callable $callback): CollectionInterface
     {

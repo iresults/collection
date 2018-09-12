@@ -29,7 +29,7 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      * Values in the input Collections with numeric keys will be renumbered with incrementing keys starting from zero in the result Collection.
      *
      * @param array $arguments
-     * @return CollectionInterface
+     * @return static
      */
     // public function merge(... $arguments): CollectionInterface;
 
@@ -39,7 +39,7 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      * The method returns a new Collection containing all the elements of the Collection after applying the callback function to each one.
      *
      * @param callable $callback Callback to apply
-     * @return CollectionInterface
+     * @return static
      */
     public function map(callable $callback): CollectionInterface;
 
@@ -51,18 +51,18 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      *
      * @param callable $callback The callback function to use
      * @param int      $flag     Flag determining what arguments are sent to callback: ARRAY_FILTER_USE_KEY / ARRAY_FILTER_USE_BOTH
-     * @return CollectionInterface
+     * @return static
      */
     public function filter(callable $callback, $flag = 0): CollectionInterface;
 
     /**
-     * Return the first element of the Collection for which callback returns TRUE.
+     * Return the first element of the Collection for which callback returns TRUE
      *
      * Iterates over each value in the Collection passing them to the callback function.
-     * If the callback function returns true, the current value is returned. If no match is found NULL is returned.
+     * If the callback function returns TRUE, the current value is returned. If no match is found NULL is returned.
      *
      * @param callable $callback The callback function to use
-     * @return mixed
+     * @return mixed|null
      */
     public function find(callable $callback);
 
@@ -77,6 +77,8 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
     /**
      * Return a sorted copy of the Collection using the callback function to sort by value
      *
+     * Use `ksort()` to sort by key instead
+     *
      * Example for the callback:
      *
      * ```
@@ -86,7 +88,7 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      * ```
      *
      * @param callable $callback
-     * @return CollectionInterface
+     * @return static
      */
     public function sort(callable $callback): CollectionInterface;
 
@@ -94,6 +96,8 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
     /**
      * Return a sorted copy of the Collection using the callback function to sort by key
      *
+     * Use `ksort()` to sort by value instead
+     *
      * Example for the callback:
      *
      * ```
@@ -103,7 +107,7 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      * ```
      *
      * @param callable $callback
-     * @return CollectionInterface
+     * @return static
      */
     public function ksort(callable $callback): CollectionInterface;
 }

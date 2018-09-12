@@ -6,7 +6,7 @@ namespace Iresults\Collection;
 
 use Iresults\Collection\Exception\InvalidArgumentTypeException;
 
-abstract class AbstractTypedCollection extends AbstractCollection
+abstract class AbstractTypedCollection extends AbstractCollection implements TypedCollectionInterface
 {
     /**
      * Returns the managed type
@@ -22,6 +22,10 @@ abstract class AbstractTypedCollection extends AbstractCollection
         parent::offsetSet($index, $newValue);
     }
 
+    /**
+     * @param mixed ...$arguments
+     * @return static
+     */
     public function merge(... $arguments): CollectionInterface
     {
         return new static($this->mergeArguments($arguments));

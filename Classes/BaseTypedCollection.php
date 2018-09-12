@@ -25,9 +25,9 @@ abstract class BaseTypedCollection extends AbstractTypedCollection
      * The method returns a new Typed Collection containing all the elements of the collection after applying the callback function to each one.
      *
      * @param callable $callback Callback to apply
-     * @return CollectionInterface
+     * @return static
      */
-    public function mapTyped(callable $callback)
+    public function mapTyped(callable $callback): TypedCollectionInterface
     {
         return new static(array_map($callback, $this->getArrayCopy()));
     }

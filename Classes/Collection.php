@@ -18,7 +18,7 @@ class Collection extends AbstractCollection
      *
      * @param string $delimiter
      * @param string $input
-     * @return CollectionInterface
+     * @return static
      */
     public static function fromString(string $delimiter, string $input): CollectionInterface
     {

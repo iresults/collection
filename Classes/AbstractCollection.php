@@ -20,23 +20,39 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
     /**
      * AbstractCollection constructor
      *
-     * @param array|\Traversable $items
+     * This constructor is not allowed to be called directly. So `new SubCollection()` is denied *unless*
+     * `SubCollection` explicitly defines a public constructor method (like `BaseTypedCollection` does)
+     *
+     * @param iterable|array|\Traversable $items
      */
     protected function __construct($items = [])
     {
         $this->items = is_array($items) ? $items : iterator_to_array($items);
     }
 
+    /**
+     * @param mixed ...$arguments
+     * @return static
+     */
     public function merge(... $arguments): CollectionInterface
     {
         return new static($this->mergeArguments($arguments));
     }
 
+    /**
+     * @param callable $callback
+     * @return static
+     */
     public function map(callable $callback): CollectionInterface
     {
         return new static(array_map($callback, $this->getArrayCopy()));
     }
 
+    /**
+     * @param callable $callback
+     * @param int      $flag
+     * @return static
+     */
     public function filter(callable $callback, $flag = 0): CollectionInterface
     {
         return new static(array_filter($this->getArrayCopy(), $callback, $flag));
@@ -93,6 +109,10 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
         return count($this->items);
     }
 
+    /**
+     * @param callable $callback
+     * @return static
+     */
     public function sort(callable $callback): CollectionInterface
     {
         $items = $this->items;

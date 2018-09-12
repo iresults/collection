@@ -15,6 +15,7 @@ class TypedCollection extends AbstractTypedCollection
      */
     protected function __construct()
     {
+        parent::__construct([]);
     }
 
     /**
@@ -54,9 +55,9 @@ class TypedCollection extends AbstractTypedCollection
      *
      * @param callable $callback   Callback to apply
      * @param string   $targetType Target type of the new collection. If none is given the current type will be used
-     * @return CollectionInterface
+     * @return static
      */
-    public function mapTyped(callable $callback, string $targetType = null)
+    public function mapTyped(callable $callback, string $targetType = null): TypedCollectionInterface
     {
         return static::withTypeAndData(
             $targetType ?? $this->type,
@@ -74,6 +75,11 @@ class TypedCollection extends AbstractTypedCollection
         return static::withTypeAndData($this->type, $this->mergeArguments($arguments));
     }
 
+    /**
+     * @param callable $callback
+     * @param int      $flag
+     * @return static
+     */
     public function filter(callable $callback, $flag = 0): CollectionInterface
     {
         return static::withTypeAndData(
