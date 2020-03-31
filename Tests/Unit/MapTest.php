@@ -63,7 +63,6 @@ class MapTest extends TestCase
         $this->assertNull($this->fixture->current());
     }
 
-
     /**
      * @test
      */
@@ -72,7 +71,6 @@ class MapTest extends TestCase
         $this->assertInstanceOf(stdClass::class, $this->fixture->key());
         $this->assertSame('a', $this->fixture->key()->character);
     }
-
 
     /**
      * @test
@@ -132,7 +130,6 @@ class MapTest extends TestCase
             ]
         );
 
-
         $this->assertTrue($this->fixture->offsetExists($object));
         $this->assertTrue($this->fixture->exists($object));
         $this->assertTrue(isset($this->fixture[$object]));
@@ -162,7 +159,6 @@ class MapTest extends TestCase
                 [$object, 'a'],
             ]
         );
-
 
         $this->assertEquals('a', $this->fixture->offsetGet($object));
         $this->assertEquals('a', $this->fixture->get($object));
@@ -219,6 +215,10 @@ class MapTest extends TestCase
         $this->assertNull($this->fixture->offsetGet($object));
         $this->assertNull($this->fixture[$object]);
 
+        foreach ($this->fixture as $key => $_) {
+            $this->assertFalse(true, 'Map must be empty');
+        }
+
         $object = new stdClass();
         $this->fixture = new Map(
             [
@@ -228,6 +228,76 @@ class MapTest extends TestCase
         unset($this->fixture[$object]);
         $this->assertNull($this->fixture->offsetGet($object));
         $this->assertNull($this->fixture[$object]);
+
+        foreach ($this->fixture as $key => $_) {
+            $this->assertFalse(true, 'Map must be empty');
+        }
+
+        $object = new stdClass();
+        $this->fixture = new Map(
+            [
+                [$object, 'a'],
+            ]
+        );
+        $removedValue = $this->fixture->remove($object);
+        $this->assertSame('a', $removedValue);
+        $this->assertNull($this->fixture->offsetGet($object));
+        $this->assertNull($this->fixture[$object]);
+
+        foreach ($this->fixture as $key => $_) {
+            $this->assertFalse(true, 'Map must be empty');
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function offsetUnsetEmptyValueTest()
+    {
+        $emptyValue = [];
+        $object = new stdClass();
+        $this->fixture = new Map(
+            [
+                [$object, $emptyValue],
+            ]
+        );
+
+        $this->fixture->offsetUnset($object);
+        $this->assertNull($this->fixture->offsetGet($object));
+        $this->assertNull($this->fixture[$object]);
+
+        foreach ($this->fixture as $key => $_) {
+            $this->assertFalse(true, 'Map must be empty');
+        }
+
+        $object = new stdClass();
+        $this->fixture = new Map(
+            [
+                [$object, $emptyValue],
+            ]
+        );
+        unset($this->fixture[$object]);
+        $this->assertNull($this->fixture->offsetGet($object));
+        $this->assertNull($this->fixture[$object]);
+
+        foreach ($this->fixture as $key => $_) {
+            $this->assertFalse(true, 'Map must be empty');
+        }
+
+        $object = new stdClass();
+        $this->fixture = new Map(
+            [
+                [$object, $emptyValue],
+            ]
+        );
+        $removedValue = $this->fixture->remove($object);
+        $this->assertSame($emptyValue, $removedValue);
+        $this->assertNull($this->fixture->offsetGet($object));
+        $this->assertNull($this->fixture[$object]);
+
+        foreach ($this->fixture as $key => $_) {
+            $this->assertFalse(true, 'Map must be empty');
+        }
     }
 
     /**
@@ -347,7 +417,6 @@ class MapTest extends TestCase
 
         $this->fixture->offsetUnset($object);
         $this->assertEquals(1, $this->fixture->count());
-
     }
 
     /**

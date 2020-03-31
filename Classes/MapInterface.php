@@ -48,6 +48,14 @@ interface MapInterface extends CollectionInterface
     public function set($keyObject, $value);
 
     /**
+     * Remove the value for the given key from the Map and return it
+     *
+     * @param object|string $keyObject Key object to lookup or it's hash
+     * @return mixed
+     */
+    public function remove($keyObject);
+
+    /**
      * Return the first key-value pair of the Collection for which callback returns TRUE.
      *
      * Iterates over each value in the Collection passing them to the callback function.

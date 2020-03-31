@@ -140,6 +140,14 @@ class Map implements Iterator, MapInterface
         unset($this->hashToValueMap[$hash]);
     }
 
+    public function remove($keyObject)
+    {
+        $value = $this->get($keyObject);
+        $this->offsetUnset($keyObject);
+
+        return $value;
+    }
+
     public function count()
     {
         return count($this->hashToKeyObjectMap);
