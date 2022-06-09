@@ -3,49 +3,60 @@ declare(strict_types=1);
 
 namespace Iresults\Collection;
 
-
 use Iresults\Collection\Exception\InvalidArgumentTypeException;
+use Iresults\Collection\Utility\TypeUtility;
 
+/**
+ * @template T
+ * @template K
+ * @internal
+ */
 abstract class AbstractTypedCollection extends AbstractCollection implements TypedCollectionInterface
 {
     /**
-     * Returns the managed type
+     * Return the managed type
      *
-     * @return string
+     * @return string|class-string
      */
     abstract public function getType(): string;
 
-
-    public function offsetSet($index, $newValue)
+    /**
+     * @param K $offset
+     * @param T $value
+     * @return void
+     */
+    public function offsetSet($offset, $value)
     {
-        $this->validateElementType($this->getType(), $newValue);
-        parent::offsetSet($index, $newValue);
+        $this->validateElementType($this->getType(), $value);
+        parent::offsetSet($offset, $value);
     }
 
     /**
      * @param mixed ...$arguments
      * @return static
      */
-    public function merge(... $arguments): CollectionInterface
+    public function merge(...$arguments): CollectionInterface
     {
         return new static($this->mergeArguments($arguments));
     }
 
     public function map(callable $callback): CollectionInterface
     {
-        return new Collection(array_map($callback, $this->getArrayCopy()));
+        $transformer = new Transformer\Map();
+
+        // The method returns an un-typed collection
+        return $transformer->apply($this, $callback, new Collection());
     }
 
-    public function filter(callable $callback, $flag = 0): CollectionInterface
+    public function filterMap(callable $callback): CollectionInterface
     {
-        return new static(array_filter($this->getArrayCopy(), $callback, $flag));
+        $transformer = new Transformer\FilterMap();
+
+        // The method returns an un-typed collection
+        return $transformer->apply($this, $callback, new Collection());
     }
 
-    /**
-     * @param string             $type
-     * @param array|\Traversable $elements
-     */
-    protected static function assertValidateElementsType(string $type, $elements)
+    protected static function assertValidateElementsType(string $type, iterable $elements)
     {
         foreach ($elements as $element) {
             static::validateElementType($type, $element);
@@ -63,32 +74,9 @@ abstract class AbstractTypedCollection extends AbstractCollection implements Typ
             $exceptionMessage = sprintf(
                 'Element is not of expected type %s, %s given',
                 $type,
-                static::detectType($element)
+                TypeUtility::detectType($element)
             );
             throw new InvalidArgumentTypeException($exceptionMessage);
-        }
-    }
-
-    /**
-     * @param mixed $element
-     * @return string
-     */
-    protected static function detectType($element)
-    {
-        return is_object($element) ? get_class($element) : gettype($element);
-    }
-
-
-    /**
-     * @param $input
-     * @throws InvalidArgumentTypeException
-     */
-    protected static function assertValidInput($input)
-    {
-        if (!is_array($input) && !($input instanceof \Traversable)) {
-            throw new InvalidArgumentTypeException(
-                'Input must be either an array or an object'
-            );
         }
     }
 }

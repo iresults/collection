@@ -8,27 +8,23 @@ namespace Iresults\Collection;
  */
 abstract class BaseTypedCollection extends AbstractTypedCollection
 {
-    /**
-     * @param array|\Traversable $items
-     */
-    public function __construct($items = [])
+    public function __construct(iterable $items = [])
     {
-        static::assertValidInput($items);
-
         static::assertValidateElementsType($this->getType(), $items);
         parent::__construct($items);
     }
 
-    /**
-     * Applies the callback to the elements of the collection
-     *
-     * The method returns a new Typed Collection containing all the elements of the collection after applying the callback function to each one.
-     *
-     * @param callable $callback Callback to apply
-     * @return static
-     */
     public function mapTyped(callable $callback): TypedCollectionInterface
     {
-        return new static(array_map($callback, $this->getArrayCopy()));
+        $transformer = new Transformer\Map();
+
+        return $transformer->apply($this, $callback, new static());
+    }
+
+    public function filterMapTyped(callable $callback): TypedCollectionInterface
+    {
+        $transformer = new Transformer\FilterMap();
+
+        return $transformer->apply($this, $callback, new static());
     }
 }

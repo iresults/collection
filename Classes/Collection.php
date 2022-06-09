@@ -8,7 +8,7 @@ namespace Iresults\Collection;
  */
 class Collection extends AbstractCollection
 {
-    public function __construct($items = [])
+    public function __construct(iterable $items = [])
     {
         parent::__construct($items);
     }

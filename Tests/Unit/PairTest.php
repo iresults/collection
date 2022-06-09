@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace Iresults\Collection\Tests\Unit;
 
+use Iresults\Collection\Exception\OutOfRangeException;
 use Iresults\Collection\Pair;
 use PHPUnit\Framework\TestCase;
 
@@ -10,15 +12,15 @@ class PairTest extends TestCase
     /**
      * @var Pair
      */
-    private $fixture;
+    private Pair $fixture;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->fixture = new Pair('a', 'b');
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->fixture);
         parent::tearDown();
@@ -99,27 +101,21 @@ class PairTest extends TestCase
         $this->assertNull($this->fixture->offsetGet(1));
     }
 
-    /**
-     * @expectedException \Iresults\Collection\Exception\OutOfRangeException
-     */
     public function testOffsetGetOutOfBound()
     {
+        $this->expectException(OutOfRangeException::class);
         $this->fixture->offsetSet(2, 'c');
     }
 
-    /**
-     * @expectedException \Iresults\Collection\Exception\OutOfRangeException
-     */
     public function testOffsetSetOutOfBound()
     {
+        $this->expectException(OutOfRangeException::class);
         $this->fixture->offsetSet(2, 'c');
     }
 
-    /**
-     * @expectedException \Iresults\Collection\Exception\OutOfRangeException
-     */
     public function testOffsetUnsetOutOfBound()
     {
+        $this->expectException(OutOfRangeException::class);
         $this->fixture->offsetSet(2, 'c');
     }
 }

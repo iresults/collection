@@ -3,27 +3,45 @@ declare(strict_types=1);
 
 namespace Iresults\Collection;
 
+use ArrayIterator;
+use InvalidArgumentException;
+use Iresults\Collection\Traits\FilterMapTrait;
+use Iresults\Collection\Traits\FilterTrait;
+use Iresults\Collection\Traits\MapTrait;
+use Iresults\Collection\Traits\PartitionTrait;
+use Iresults\Collection\Traits\ReduceTrait;
 use Iterator;
 use UnexpectedValueException;
+use function is_scalar;
 
 /**
  * Object-to-object data store
+ *
+ * @template K
+ * @template V
+ * @implements MapInterface<K,V>
  */
 class Map implements Iterator, MapInterface
 {
+    use PartitionTrait;
+    use ReduceTrait;
+    use FilterTrait;
+    use MapTrait;
+    use FilterMapTrait;
+
     /**
      * Map of the object hash to the key object
      *
-     * @var array
+     * @var array<string,K>
      */
-    private $hashToKeyObjectMap = [];
+    private array $hashToKeyObjectMap = [];
 
     /**
      * Map of the object hash to the value object
      *
      * @var array
      */
-    private $hashToValueMap = [];
+    private array $hashToValueMap = [];
 
     /**
      * Map constructor
@@ -38,9 +56,9 @@ class Map implements Iterator, MapInterface
         }
     }
 
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
-        return new \ArrayIterator($this->getArrayCopy());
+        return new ArrayIterator($this->getArrayCopy());
     }
 
     public static function withPairs(...$pairs): MapInterface
@@ -87,7 +105,7 @@ class Map implements Iterator, MapInterface
         return key($this->hashToKeyObjectMap);
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return (current($this->hashToKeyObjectMap) !== false);
     }
@@ -97,7 +115,7 @@ class Map implements Iterator, MapInterface
         reset($this->hashToKeyObjectMap);
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->hashToKeyObjectMap[$this->hash($offset)]);
     }
@@ -148,28 +166,14 @@ class Map implements Iterator, MapInterface
         return $value;
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->hashToKeyObjectMap);
     }
 
-    /**
-     * @param callable $callback
-     * @return static
-     */
-    public function map(callable $callback): CollectionInterface
-    {
-        $result = new static();
-        foreach ($this as $keyObject => $value) {
-            $result->offsetSet($keyObject, $callback($keyObject, $value));
-        }
-
-        return $result;
-    }
-
     public function find(callable $callback)
     {
-        foreach ($this as $keyObject => $value) {
+        foreach ($this as $value) {
             if ($callback($value)) {
                 return $value;
             }
@@ -178,7 +182,7 @@ class Map implements Iterator, MapInterface
         return null;
     }
 
-    public function findPair(callable $callback)
+    public function findPair(callable $callback): ?Pair
     {
         foreach ($this as $keyObject => $value) {
             $pair = new Pair($keyObject, $value);
@@ -190,32 +194,11 @@ class Map implements Iterator, MapInterface
         return null;
     }
 
-    /**
-     * @param callable $callback
-     * @param int      $flag
-     * @return static
-     */
-    public function filter(callable $callback, $flag = 0): CollectionInterface
-    {
-        $result = new static();
-        foreach ($this as $keyObject => $value) {
-            if ($callback($keyObject, $value)) {
-                $result->offsetSet($keyObject, $value);
-            }
-        }
-
-        return $result;
-    }
-
-    public function implode($glue = ''): string
+    public function implode(string $glue = ''): string
     {
         return implode($glue, $this->getArrayCopy());
     }
 
-    /**
-     * @param callable $callback
-     * @return static
-     */
     public function sort(callable $callback): CollectionInterface
     {
         $values = $this->hashToValueMap;
@@ -229,10 +212,6 @@ class Map implements Iterator, MapInterface
         return $result;
     }
 
-    /**
-     * @param callable $callback
-     * @return static
-     */
     public function ksort(callable $callback): CollectionInterface
     {
         $keyObjectMap = $this->hashToKeyObjectMap;
@@ -250,10 +229,13 @@ class Map implements Iterator, MapInterface
      * @param string|object $variable
      * @return string
      */
-    protected function hash($variable)
+    protected function hash($variable): string
     {
         if (is_string($variable)) {
             return $variable;
+        }
+        if (is_scalar($variable)) {
+            return (string)$variable;
         }
         if (is_object($variable)) {
             return spl_object_hash($variable);
@@ -265,16 +247,19 @@ class Map implements Iterator, MapInterface
     }
 
     /**
-     * @param array $objectAndValue
+     * @param array|Pair $objectAndValue
      * @return void
      */
     private static function assertPair($objectAndValue)
     {
+        if ($objectAndValue instanceof Pair) {
+            return;
+        }
         if (!is_array($objectAndValue)) {
-            throw new \InvalidArgumentException('Constructor argument must be an array of arrays', 1442827041);
+            throw new InvalidArgumentException('Constructor argument must be an array of arrays', 1442827041);
         }
         if (!isset($objectAndValue[0]) || count($objectAndValue) < 2) {
-            throw new \InvalidArgumentException('Constructor argument must be an array of arrays', 1442827041);
+            throw new InvalidArgumentException('Constructor argument must be an array of arrays', 1442827041);
         }
     }
 }

@@ -9,13 +9,16 @@ use Traversable;
 
 /**
  * Interface for array functions
+ *
+ * @template K
+ * @template V
  */
 interface CollectionInterface extends Countable, ArrayAccess, Traversable
 {
     /**
-     * Returns an array copy of the Collection's data
+     * Return an array copy of the Collection's data
      *
-     * @return array
+     * @return array<K, V>
      */
     public function getArrayCopy(): array;
 
@@ -34,26 +37,49 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
     // public function merge(... $arguments): CollectionInterface;
 
     /**
-     * Applies the callback to the elements of the Collection
+     * Apply the callback to the elements of the Collection
      *
      * The method returns a new Collection containing all the elements of the Collection after applying the callback function to each one.
      *
-     * @param callable $callback Callback to apply
-     * @return static
+     * @template R
+     * @param callable(V, K): R $callback Callback to apply
+     * @return CollectionInterface<K, R>
      */
     public function map(callable $callback): CollectionInterface;
 
     /**
-     * Filters elements of the Collection using a callback function
+     * Reduce the elements of the Collection to a single value using the callback function
+     *
+     * @template R
+     * @param callable(R, V, K): R $callback Callback to apply
+     * @param R|null               $carry
+     * @return R
+     */
+    public function reduce(callable $callback, $carry = null);
+
+    /**
+     * Filter elements of the Collection using a callback function
      *
      * Iterates over each value in the Collection passing them to the callback function.
      * If the callback function returns true, the current value is returned into the result Collection. Keys are preserved.
      *
-     * @param callable $callback The callback function to use
-     * @param int      $flag     Flag determining what arguments are sent to callback: ARRAY_FILTER_USE_KEY / ARRAY_FILTER_USE_BOTH
-     * @return static
+     * @param callable(V, K): bool $callback The callback function to use
+     * @return CollectionInterface<K, V>
      */
-    public function filter(callable $callback, $flag = 0): CollectionInterface;
+    public function filter(callable $callback): CollectionInterface;
+
+    /**
+     * Map and filter elements of the Collection using a callback function
+     *
+     * Iterates over each value in the Collection passing them to the callback function.
+     * If the callback function does not return NULL, the current value is returned into the result Collection. If the
+     * callback's result is NULL the entry will not be added to the result Collection. Keys are preserved.
+     *
+     * @template R
+     * @param callable(V, K): R|null $callback The callback function to use
+     * @return CollectionInterface<K, R>
+     */
+    public function filterMap(callable $callback): CollectionInterface;
 
     /**
      * Return the first element of the Collection for which callback returns TRUE
@@ -61,8 +87,8 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      * Iterates over each value in the Collection passing them to the callback function.
      * If the callback function returns TRUE, the current value is returned. If no match is found NULL is returned.
      *
-     * @param callable $callback The callback function to use
-     * @return mixed|null
+     * @param callable(V): bool $callback The callback function to use
+     * @return V|null
      */
     public function find(callable $callback);
 
@@ -72,7 +98,7 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      * @param string $glue
      * @return string
      */
-    public function implode($glue = ''): string;
+    public function implode(string $glue = ''): string;
 
     /**
      * Return a sorted copy of the Collection using the callback function to sort by value
@@ -87,16 +113,15 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      *  }
      * ```
      *
-     * @param callable $callback
+     * @param callable(V, V): int $callback
      * @return static
      */
     public function sort(callable $callback): CollectionInterface;
 
-
     /**
      * Return a sorted copy of the Collection using the callback function to sort by key
      *
-     * Use `ksort()` to sort by value instead
+     * Use `sort()` to sort by value instead
      *
      * Example for the callback:
      *
@@ -106,8 +131,17 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      *  }
      * ```
      *
-     * @param callable $callback
+     * @param callable(K, K): int $callback
      * @return static
      */
     public function ksort(callable $callback): CollectionInterface;
+
+    /**
+     * Partition the Collection according to the result of the callback function
+     *
+     * @template R
+     * @param callable(V, K): R $callback
+     * @return MapInterface<R, V[]>
+     */
+    public function partition(callable $callback): MapInterface;
 }

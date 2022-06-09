@@ -1,20 +1,31 @@
 <?php
+declare(strict_types=1);
 
 namespace Iresults\Collection;
-
 
 use Iresults\Collection\Exception\InvalidArgumentTypeException;
 use Iresults\Collection\Exception\OutOfRangeException;
 
+/**
+ * @template L
+ * @template R
+ */
 class Pair implements \ArrayAccess
 {
+    /**
+     * @var L
+     */
     private $left;
+
+    /**
+     * @var R
+     */
     private $right;
 
-    public function __construct($field1, $field2)
+    public function __construct($left, $right)
     {
-        $this->left = $field1;
-        $this->right = $field2;
+        $this->left = $left;
+        $this->right = $right;
     }
 
     /**
@@ -69,7 +80,7 @@ class Pair implements \ArrayAccess
         return $this->getRight();
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return is_int($offset) && $offset >= 0 && $offset < 2;
     }

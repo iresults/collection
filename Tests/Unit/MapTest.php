@@ -1,22 +1,25 @@
 <?php
+/** @noinspection PhpIllegalArrayKeyTypeInspection */
 declare(strict_types=1);
 
 namespace Iresults\Collection\Tests\Unit;
 
+use InvalidArgumentException;
 use Iresults\Collection\CollectionInterface;
 use Iresults\Collection\Map;
 use Iresults\Collection\Pair;
 use PHPUnit\Framework\TestCase;
 use stdClass;
+use function array_values;
 
 class MapTest extends TestCase
 {
     /**
      * @var Map
      */
-    protected $fixture;
+    protected Map $fixture;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $objectA = new stdClass();
         $objectA->character = 'a';
@@ -36,7 +39,7 @@ class MapTest extends TestCase
         );
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->fixture);
     }
@@ -215,8 +218,8 @@ class MapTest extends TestCase
         $this->assertNull($this->fixture->offsetGet($object));
         $this->assertNull($this->fixture[$object]);
 
-        foreach ($this->fixture as $key => $_) {
-            $this->assertFalse(true, 'Map must be empty');
+        foreach ($this->fixture as $_) {
+            $this->fail('Map must be empty');
         }
 
         $object = new stdClass();
@@ -227,10 +230,11 @@ class MapTest extends TestCase
         );
         unset($this->fixture[$object]);
         $this->assertNull($this->fixture->offsetGet($object));
+
         $this->assertNull($this->fixture[$object]);
 
-        foreach ($this->fixture as $key => $_) {
-            $this->assertFalse(true, 'Map must be empty');
+        foreach ($this->fixture as $_) {
+            $this->fail('Map must be empty');
         }
 
         $object = new stdClass();
@@ -244,8 +248,8 @@ class MapTest extends TestCase
         $this->assertNull($this->fixture->offsetGet($object));
         $this->assertNull($this->fixture[$object]);
 
-        foreach ($this->fixture as $key => $_) {
-            $this->assertFalse(true, 'Map must be empty');
+        foreach ($this->fixture as $_) {
+            $this->fail('Map must be empty');
         }
     }
 
@@ -266,8 +270,8 @@ class MapTest extends TestCase
         $this->assertNull($this->fixture->offsetGet($object));
         $this->assertNull($this->fixture[$object]);
 
-        foreach ($this->fixture as $key => $_) {
-            $this->assertFalse(true, 'Map must be empty');
+        foreach ($this->fixture as $_) {
+            $this->fail('Map must be empty');
         }
 
         $object = new stdClass();
@@ -280,8 +284,8 @@ class MapTest extends TestCase
         $this->assertNull($this->fixture->offsetGet($object));
         $this->assertNull($this->fixture[$object]);
 
-        foreach ($this->fixture as $key => $_) {
-            $this->assertFalse(true, 'Map must be empty');
+        foreach ($this->fixture as $_) {
+            $this->fail('Map must be empty');
         }
 
         $object = new stdClass();
@@ -295,8 +299,8 @@ class MapTest extends TestCase
         $this->assertNull($this->fixture->offsetGet($object));
         $this->assertNull($this->fixture[$object]);
 
-        foreach ($this->fixture as $key => $_) {
-            $this->assertFalse(true, 'Map must be empty');
+        foreach ($this->fixture as $_) {
+            $this->fail('Map must be empty');
         }
     }
 
@@ -429,7 +433,7 @@ class MapTest extends TestCase
             $iteratorCount++;
             /** @var object $keyObject */
             $this->assertInstanceOf(stdClass::class, $keyObject);
-            $this->assertInternalType('string', $value);
+            $this->assertIsString($value);
             $this->assertEquals($value, $keyObject->character);
         }
         $this->assertSame(3, $iteratorCount);
@@ -474,7 +478,7 @@ class MapTest extends TestCase
     public function mapTest()
     {
         $result = $this->fixture->map(
-            function ($keyObject, $value) {
+            function ($value, $keyObject) {
                 /** @var object $keyObject */
                 assert($value === $keyObject->character);
 
@@ -492,16 +496,50 @@ class MapTest extends TestCase
      */
     public function filterTest()
     {
-        $result = $this->fixture->filter(
-            function ($item) {
-                return $item->character === 'a';
-            },
-            $flag = 0
-        );
+        $result = $this->fixture->filter(fn(string $value) => $value === 'a');
         $this->assertInstanceOf(CollectionInterface::class, $result);
         $this->assertInstanceOf(Map::class, $result);
         $this->assertSame(1, $result->count());
         $this->assertSame(['a'], array_values($result->getArrayCopy()));
+    }
+
+    /**
+     * @test
+     */
+    public function filterByKeyTest()
+    {
+        $result = $this->fixture->filter(fn($_value, stdClass $item) => $item->character === 'a');
+        $this->assertInstanceOf(CollectionInterface::class, $result);
+        $this->assertInstanceOf(Map::class, $result);
+        $this->assertSame(1, $result->count());
+        $this->assertSame(['a'], array_values($result->getArrayCopy()));
+    }
+
+    /**
+     * @test
+     */
+    public function filterMapTest()
+    {
+        $result = $this->fixture->filterMap(
+            fn(string $value) => $value !== 'b' ? $value : null
+        );
+        $this->assertInstanceOf(Map::class, $result);
+        $this->assertSame(2, $result->count());
+        $this->assertEquals(['a', 'c'], array_values($result->getArrayCopy()));
+    }
+
+    /**
+     * @test
+     */
+    public function filterMapEmptyStringTest()
+    {
+        // The callback returns an empty string or null => the empty string will be added to the result
+        $result = $this->fixture->filterMap(
+            fn(string $value): ?string => $value !== 'b' ? '' : null
+        );
+        $this->assertInstanceOf(Map::class, $result);
+        $this->assertSame(2, $result->count());
+        $this->assertEquals(['', ''], array_values($result->getArrayCopy()));
     }
 
     /**
@@ -539,26 +577,26 @@ class MapTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
      */
     public function createWithInvalidArgumentTest()
     {
+        $this->expectException(InvalidArgumentException::class);
         new Map([new stdClass(),]);
     }
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
      */
     public function createWithInvalidArgument2Test()
     {
+        $this->expectException(InvalidArgumentException::class);
         new Map([[]]);
     }
 
     /**
      * @test
      */
-    public function createWithPairTest()
+    public function createWithPairArrayTest()
     {
         $map = Map::withPairs(
             [new stdClass(), 'a'],
@@ -570,10 +608,23 @@ class MapTest extends TestCase
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
+     */
+    public function createWithPairTest()
+    {
+        $map = Map::withPairs(
+            new Pair(new stdClass(), 'a'),
+            new Pair(new stdClass(), 'b'),
+            new Pair(new stdClass(), 'c'),
+        );
+        $this->assertSame(['a', 'b', 'c'], array_values($map->getArrayCopy()));
+    }
+
+    /**
+     * @test
      */
     public function createWithInvalidPairTest()
     {
+        $this->expectException(InvalidArgumentException::class);
         $map = Map::withPairs(
             new stdClass(),
             [new stdClass(), 'b'],

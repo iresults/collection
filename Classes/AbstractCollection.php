@@ -3,19 +3,35 @@ declare(strict_types=1);
 
 namespace Iresults\Collection;
 
+use ArrayIterator;
+use Iresults\Collection\Traits\FilterMapTrait;
+use Iresults\Collection\Traits\FilterTrait;
+use Iresults\Collection\Traits\MapTrait;
+use Iresults\Collection\Traits\PartitionTrait;
+use Iresults\Collection\Traits\ReduceTrait;
+use Iresults\Collection\Transformer\Map as MapTranformer;
+use Iresults\Collection\Utility\TypeUtility;
 use IteratorAggregate;
 
 /**
  * Abstract base collection container
+ *
+ * @internal
  */
 abstract class AbstractCollection implements IteratorAggregate, CollectionInterface, MergeableInterface
 {
+    use PartitionTrait;
+    use ReduceTrait;
+    use FilterTrait;
+    use MapTrait;
+    use FilterMapTrait;
+
     /**
      * The items managed by this collection
      *
      * @var array
      */
-    protected $items = [];
+    protected array $items = [];
 
     /**
      * AbstractCollection constructor
@@ -23,39 +39,20 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
      * This constructor is not allowed to be called directly. So `new SubCollection()` is denied *unless*
      * `SubCollection` explicitly defines a public constructor method (like `BaseTypedCollection` does)
      *
-     * @param iterable|array|\Traversable $items
+     * @param iterable $items
      */
-    protected function __construct($items = [])
+    protected function __construct(iterable $items = [])
     {
-        $this->items = is_array($items) ? $items : iterator_to_array($items);
+        $this->items = TypeUtility::iterableToArray($items);
     }
 
     /**
      * @param mixed ...$arguments
      * @return static
      */
-    public function merge(... $arguments): CollectionInterface
+    public function merge(...$arguments): CollectionInterface
     {
         return new static($this->mergeArguments($arguments));
-    }
-
-    /**
-     * @param callable $callback
-     * @return static
-     */
-    public function map(callable $callback): CollectionInterface
-    {
-        return new static(array_map($callback, $this->getArrayCopy()));
-    }
-
-    /**
-     * @param callable $callback
-     * @param int      $flag
-     * @return static
-     */
-    public function filter(callable $callback, $flag = 0): CollectionInterface
-    {
-        return new static(array_filter($this->getArrayCopy(), $callback, $flag));
     }
 
     public function find(callable $callback)
@@ -69,17 +66,17 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
         return null;
     }
 
-    public function implode($glue = ''): string
+    public function implode(string $glue = ''): string
     {
         return implode($glue, $this->getArrayCopy());
     }
 
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
-        return new \ArrayIterator($this->items);
+        return new ArrayIterator($this->items);
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->items[$offset]);
     }
@@ -104,7 +101,7 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
         return $this->items;
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->items);
     }
@@ -136,8 +133,8 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
     protected function mergeArguments(array $arguments): array
     {
         $preparedArguments = array_map(
-            function ($argument) {
-                return is_array($argument) ? $argument : iterator_to_array($argument);
+            function (iterable $argument): array {
+                return TypeUtility::iterableToArray($argument);
             },
             $arguments
         );

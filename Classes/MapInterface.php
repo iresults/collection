@@ -5,53 +5,56 @@ namespace Iresults\Collection;
 
 /**
  * Object-to-object data store
+ *
+ * @template K
+ * @template V
  */
 interface MapInterface extends CollectionInterface
 {
     /**
      * Create a new map with the given pairs
      *
-     * @param array $pairs
-     * @return MapInterface
+     * @param Pair<K, V>[]|array<K, V> $pairs
+     * @return MapInterface<K,V>
      */
     public static function withPairs(...$pairs): MapInterface;
 
     /**
-     * Returns the array of key objects
+     * Return the array of key objects
      *
-     * @return object[]
+     * @return K[]
      */
     public function getKeys(): array;
 
     /**
-     * Returns if the given key exists
+     * Return if the given key exists
      *
-     * @param object|string $keyObject Key object to lookup or it's hash
+     * @param string|K $keyObject Key object to lookup or it's hash
      * @return bool
      */
     public function exists($keyObject): bool;
 
     /**
-     * Returns the value for the given key
+     * Return the value for the given key
      *
-     * @param object|string $keyObject Key object to lookup or it's hash
-     * @return mixed
+     * @param string|K $keyObject Key object to lookup or it's hash
+     * @return V|null
      */
     public function get($keyObject);
 
     /**
-     * Sets the value for the given key
+     * Set the value for the given key
      *
-     * @param object|string $keyObject Key object to lookup or it's hash
-     * @param mixed         $value
+     * @param string|K $keyObject Key object to lookup or it's hash
+     * @param V               $value
      */
     public function set($keyObject, $value);
 
     /**
      * Remove the value for the given key from the Map and return it
      *
-     * @param object|string $keyObject Key object to lookup or it's hash
-     * @return mixed
+     * @param string|K $keyObject Key object to lookup or it's hash
+     * @return V|null
      */
     public function remove($keyObject);
 
@@ -64,5 +67,5 @@ interface MapInterface extends CollectionInterface
      * @param callable $callback The callback function to use
      * @return Pair|null
      */
-    public function findPair(callable $callback);
+    public function findPair(callable $callback): ?Pair;
 }

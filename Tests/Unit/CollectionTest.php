@@ -4,21 +4,23 @@ declare(strict_types=1);
 namespace Iresults\Collection\Tests\Unit;
 
 use Iresults\Collection\Collection;
+use Iresults\Collection\Map;
 use PHPUnit\Framework\TestCase;
+use function array_values;
 
 class CollectionTest extends TestCase
 {
     /**
      * @var Collection
      */
-    protected $fixture;
+    protected Collection $fixture;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->fixture = new Collection(['a', 'b', 'c']);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->fixture);
     }
@@ -38,16 +40,7 @@ class CollectionTest extends TestCase
      */
     public function mapTest()
     {
-        $result = $this->fixture->map(
-            function ($item) {
-                return strtoupper($item);
-            }
-        );
-        $this->assertInstanceOf(Collection::class, $result);
-        $this->assertSame(3, $result->count());
-        $this->assertSame(['A', 'B', 'C'], $result->getArrayCopy());
-
-        $result = $this->fixture->map('strtoupper');
+        $result = $this->fixture->map(fn($item) => strtoupper($item));
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(3, $result->count());
         $this->assertSame(['A', 'B', 'C'], $result->getArrayCopy());
@@ -58,12 +51,7 @@ class CollectionTest extends TestCase
      */
     public function filterTest()
     {
-        $result = $this->fixture->filter(
-            function ($item) {
-                return $item === 'a';
-            },
-            $flag = 0
-        );
+        $result = $this->fixture->filter(fn($item) => $item === 'a');
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(1, $result->count());
         $this->assertSame(['a'], $result->getArrayCopy());
@@ -72,14 +60,40 @@ class CollectionTest extends TestCase
     /**
      * @test
      */
+    public function filterMapTest()
+    {
+        $result = $this->fixture->filterMap(
+            fn(string $item) => $item !== 'b' ? $item : null
+        );
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertSame(2, $result->count());
+        $this->assertEquals([
+            0 => 'a',
+            2 => 'c',
+        ], $result->getArrayCopy());
+    }
+
+    /**
+     * @test
+     */
+    public function filterMapEmptyStringTest()
+    {
+        // The callback returns an empty string or null => the empty string will be added to the result
+        $result = $this->fixture->filterMap(
+            fn(string $value): ?string => $value !== 'b' ? '' : null
+        );
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertSame(2, $result->count());
+        $this->assertEquals(['', ''], array_values($result->getArrayCopy()));
+    }
+
+    /**
+     * @test
+     */
     public function findTest()
     {
         $this->fixture = new Collection([10, 20, 30, 40]);
-        $result = $this->fixture->find(
-            function ($item) {
-                return $item > 20;
-            }
-        );
+        $result = $this->fixture->find(fn($item) => $item > 20);
         $this->assertSame(30, $result);
     }
 
@@ -89,11 +103,7 @@ class CollectionTest extends TestCase
     public function findNoneTest()
     {
         $this->fixture = new Collection([10, 20, 30, 40]);
-        $result = $this->fixture->find(
-            function ($item) {
-                return $item > 40;
-            }
-        );
+        $result = $this->fixture->find(fn($item) => $item > 40);
         $this->assertNull($result);
     }
 

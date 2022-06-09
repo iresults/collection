@@ -5,6 +5,7 @@ namespace Iresults\Collection\Tests\Unit;
 
 use ArrayObject;
 use Iresults\Collection\Collection;
+use Iresults\Collection\Exception\InvalidArgumentTypeException;
 use Iresults\Collection\Tests\Unit\Fixtures\Address;
 use Iresults\Collection\Tests\Unit\Fixtures\Person;
 use Iresults\Collection\TypedCollection;
@@ -15,9 +16,9 @@ class TypedCollectionTest extends TestCase
     /**
      * @var TypedCollection
      */
-    protected $fixture;
+    protected TypedCollection $fixture;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->fixture = TypedCollection::withTypeAndData(
             Person::class,
@@ -25,7 +26,7 @@ class TypedCollectionTest extends TestCase
         );
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->fixture);
     }
@@ -43,40 +44,10 @@ class TypedCollectionTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Iresults\Collection\Exception\InvalidArgumentTypeException
-     * @expectedExceptionMessage Input must be either an array or an object
-     */
-    public function throwForInvalidInputTest()
-    {
-        TypedCollection::withTypeAndData(Person::class, 123);
-    }
-
-    /**
-     * @test
-     * @expectedException \Iresults\Collection\Exception\InvalidArgumentTypeException
-     * @expectedExceptionMessage Input must be either an array or an object
-     */
-    public function throwForInvalidClassInputTest()
-    {
-        TypedCollection::withTypeAndData(Person::class, 'NotAClass');
-    }
-
-    /**
-     * @test
-     * @expectedException \Iresults\Collection\Exception\InvalidArgumentTypeException
-     * @expectedExceptionMessage Input must be either an array or an object
-     */
-    public function throwEmptyInputTest()
-    {
-        TypedCollection::withTypeAndData(Person::class, null);
-    }
-
-    /**
-     * @test
-     * @expectedException \Iresults\Collection\Exception\InvalidArgumentTypeException
      */
     public function throwForMixedElementsTest()
     {
+        $this->expectException(InvalidArgumentTypeException::class);
         TypedCollection::withTypeAndData(Person::class, [new Person(), new Person(), new Address()]);
     }
 
@@ -85,16 +56,7 @@ class TypedCollectionTest extends TestCase
      */
     public function mapTest()
     {
-        $result = $this->fixture->map(
-            function (Person $item) {
-                return strtoupper($item->getName());
-            }
-        );
-        $this->assertInstanceOf(Collection::class, $result);
-        $this->assertSame(3, $result->count());
-        $this->assertSame(['DANIEL', 'GERT', 'LOREN'], $result->getArrayCopy());
-
-        $result = $this->fixture->map('strtoupper');
+        $result = $this->fixture->map(fn(Person $item) => strtoupper($item->getName()));
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(3, $result->count());
         $this->assertSame(['DANIEL', 'GERT', 'LOREN'], $result->getArrayCopy());
@@ -105,11 +67,7 @@ class TypedCollectionTest extends TestCase
      */
     public function mapTypedTest()
     {
-        $result = $this->fixture->mapTyped(
-            function (Person $item) {
-                return new Person(strtoupper($item->getName()));
-            }
-        );
+        $result = $this->fixture->mapTyped(fn(Person $item) => new Person(strtoupper($item->getName())));
         $this->assertInstanceOf(TypedCollection::class, $result);
         $this->assertSame(3, $result->count());
         $this->assertSame('Daniel,Gert,Loren', $this->fixture->implode(','));
@@ -120,12 +78,7 @@ class TypedCollectionTest extends TestCase
      */
     public function filterTest()
     {
-        $result = $this->fixture->filter(
-            function (Person $item) {
-                return $item->getName() === 'Gert';
-            },
-            $flag = 0
-        );
+        $result = $this->fixture->filter(fn(Person $item) => $item->getName() === 'Gert');
         $this->assertInstanceOf(TypedCollection::class, $result);
         $this->assertSame(1, $result->count());
         $this->assertEquals([1 => new Person('Gert')], $result->getArrayCopy());
@@ -133,10 +86,10 @@ class TypedCollectionTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Iresults\Collection\Exception\InvalidArgumentTypeException
      */
     public function offsetSetTest()
     {
+        $this->expectException(InvalidArgumentTypeException::class);
         $this->fixture['offset'] = 'not a person instance';
     }
 
