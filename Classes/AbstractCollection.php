@@ -9,7 +9,6 @@ use Iresults\Collection\Traits\FilterTrait;
 use Iresults\Collection\Traits\MapTrait;
 use Iresults\Collection\Traits\PartitionTrait;
 use Iresults\Collection\Traits\ReduceTrait;
-use Iresults\Collection\Transformer\Map as MapTranformer;
 use Iresults\Collection\Utility\TypeUtility;
 use IteratorAggregate;
 
@@ -81,17 +80,18 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
         return isset($this->items[$offset]);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->items[$offset];
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->items[$offset] = $value;
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->items[$offset]);
     }
@@ -126,10 +126,6 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
         return new static($items);
     }
 
-    /**
-     * @param array $arguments
-     * @return array
-     */
     protected function mergeArguments(array $arguments): array
     {
         $preparedArguments = array_map(

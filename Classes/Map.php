@@ -80,6 +80,7 @@ class Map implements Iterator, MapInterface
         return $this->hashToKeyObjectMap;
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         $currentKey = $this->hashKey();
@@ -90,11 +91,13 @@ class Map implements Iterator, MapInterface
         return null;
     }
 
+    #[\ReturnTypeWillChange]
     public function next()
     {
         next($this->hashToKeyObjectMap);
     }
 
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return current($this->hashToKeyObjectMap);
@@ -110,7 +113,7 @@ class Map implements Iterator, MapInterface
         return (current($this->hashToKeyObjectMap) !== false);
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         reset($this->hashToKeyObjectMap);
     }
@@ -125,6 +128,7 @@ class Map implements Iterator, MapInterface
         return $this->offsetExists($keyObject);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if (!$this->offsetExists($offset)) {
@@ -139,7 +143,7 @@ class Map implements Iterator, MapInterface
         return $this->offsetGet($keyObject);
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $hash = $this->hash($offset);
         $this->hashToKeyObjectMap[$hash] = $offset;
@@ -151,7 +155,7 @@ class Map implements Iterator, MapInterface
         $this->offsetSet($keyObject, $value);
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $hash = $this->hash($offset);
         unset($this->hashToKeyObjectMap[$hash]);

@@ -25,7 +25,7 @@ abstract class AbstractTypedCollection extends AbstractCollection implements Typ
      * @param T $value
      * @return void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->validateElementType($this->getType(), $value);
         parent::offsetSet($offset, $value);

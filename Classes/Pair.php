@@ -85,6 +85,7 @@ class Pair implements \ArrayAccess
         return is_int($offset) && $offset >= 0 && $offset < 2;
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if ($offset === 0) {
@@ -95,6 +96,7 @@ class Pair implements \ArrayAccess
         throw $this->throwOffsetException($offset);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if ($offset === 0) {
@@ -106,6 +108,7 @@ class Pair implements \ArrayAccess
         }
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         if ($offset === 0) {
