@@ -11,10 +11,11 @@ class Map
      * @template K
      * @template V
      * @template R
+     * @template T of ArrayAccess<K, R>
      * @param iterable<K, V>    $collection
      * @param callable(V, K): R $callback
-     * @param ArrayAccess<K, R> $target
-     * @return ArrayAccess<K, R>
+     * @param T                 $target
+     * @return T
      */
     public function apply(iterable $collection, callable $callback, ArrayAccess $target): ArrayAccess
     {
