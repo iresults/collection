@@ -27,9 +27,10 @@ class PartitionTest extends TestCase
 
     /**
      * @dataProvider getIterableTestData
+     * @param iterable $testMap
      * @return void
      */
-    public function testPartitionCollection(iterable $testMap)
+    public function testPartitionCollection(iterable $testMap): void
     {
         $result = $this->fixture->apply($testMap, fn($v) => $v % 2, Collection::class);
 
@@ -78,5 +79,28 @@ class PartitionTest extends TestCase
                 ]),
             ],
         ];
+    }
+
+    public function testPartitionWithBooleanKey(): void
+    {
+        $result = $this->fixture->apply(
+            [
+                'a' => -1,
+                'b' => 2,
+                'c' => -3,
+                'd' => 4,
+            ],
+            fn($v) => $v > 0,
+            Collection::class
+        );
+
+        $this->assertSame(['' => false, '1' => true], $result->getKeys());
+        $partition1 = $result->get(true);
+        $this->assertInstanceOf(Collection::class, $partition1);
+        $this->assertSame([2, 4], $partition1->getArrayCopy());
+
+        $partition2 = $result->get(false);
+        $this->assertInstanceOf(Collection::class, $partition2);
+        $this->assertSame([-1, -3], $partition2->getArrayCopy());
     }
 }

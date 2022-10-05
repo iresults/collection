@@ -110,7 +110,7 @@ class Map implements Iterator, MapInterface
 
     public function valid(): bool
     {
-        return (current($this->hashToKeyObjectMap) !== false);
+        return current($this->hashToKeyObjectMap) !== false || key($this->hashToKeyObjectMap) !== null;
     }
 
     public function rewind(): void

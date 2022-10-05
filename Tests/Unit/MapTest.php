@@ -184,6 +184,27 @@ class MapTest extends TestCase
     /**
      * @test
      */
+    public function offsetGetBooleanKeysTest()
+    {
+        $this->fixture = new Map(
+            [
+                [false, 'a'],
+                [true, 'b'],
+            ]
+        );
+
+        $this->assertEquals('a', $this->fixture->offsetGet(false));
+        $this->assertEquals('a', $this->fixture->get(false));
+        $this->assertEquals('a', $this->fixture[false]);
+
+        $this->assertEquals('b', $this->fixture->offsetGet(true));
+        $this->assertEquals('b', $this->fixture->get(true));
+        $this->assertEquals('b', $this->fixture[true]);
+    }
+
+    /**
+     * @test
+     */
     public function offsetSetTest()
     {
         $object = new stdClass();
@@ -200,6 +221,23 @@ class MapTest extends TestCase
         $this->fixture[$object] = 'v';
         $this->assertEquals('v', $this->fixture->offsetGet($object));
         $this->assertEquals('v', $this->fixture->offsetGet(spl_object_hash($object)));
+    }
+
+    /**
+     * @test
+     */
+    public function offsetSetBooleanKeysTest()
+    {
+        $this->fixture = new Map();
+
+        $this->fixture->offsetSet(true, 'a');
+        $this->assertEquals('a', $this->fixture->offsetGet(true));
+
+        $this->fixture->set(false, 'm');
+        $this->assertEquals('m', $this->fixture->offsetGet(false));
+
+        $this->fixture[true] = 'v';
+        $this->assertEquals('v', $this->fixture->offsetGet(true));
     }
 
     /**
