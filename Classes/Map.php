@@ -12,7 +12,20 @@ use Iresults\Collection\Traits\PartitionTrait;
 use Iresults\Collection\Traits\ReduceTrait;
 use Iterator;
 use UnexpectedValueException;
+use function count;
+use function current;
+use function gettype;
+use function implode;
+use function is_array;
+use function is_object;
 use function is_scalar;
+use function is_string;
+use function key;
+use function next;
+use function reset;
+use function spl_object_hash;
+use function sprintf;
+use function uasort;
 
 /**
  * Object-to-object data store

@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Iresults\Collection\Transformer;
 
-use Iresults\Collection\Collection;
 use Iresults\Collection\Map;
 use Iresults\Collection\MapInterface;
 
