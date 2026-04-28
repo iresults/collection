@@ -33,7 +33,7 @@ use function uasort;
  * @implements Iterator<K,V>
  * @implements ArrayAccess<K,V>
  */
-final class Map implements Iterator, MapInterface, ArrayAccess
+class Map implements Iterator, MapInterface, ArrayAccess
 {
     use ReduceTrait;
 
@@ -54,7 +54,7 @@ final class Map implements Iterator, MapInterface, ArrayAccess
     /**
      * @param Pair<K,V>|array{0:K,1:V} $objects
      */
-    public function __construct(array|Pair ...$objects)
+    final public function __construct(array|Pair ...$objects)
     {
         foreach ($objects as $objectAndValue) {
             $this->assertPair($objectAndValue);
@@ -213,6 +213,7 @@ final class Map implements Iterator, MapInterface, ArrayAccess
         $values = $this->hashToValueMap;
         uasort($values, $callback);
 
+        /** @var static<K,V> $result */
         $result = new static();
         foreach ($values as $hash => $value) {
             $result->offsetSet($this->hashToKeyMap[$hash], $value);
@@ -226,6 +227,7 @@ final class Map implements Iterator, MapInterface, ArrayAccess
         $keyObjectMap = $this->hashToKeyMap;
         uasort($keyObjectMap, $callback);
 
+        /** @var static<K,V> $result */
         $result = new static();
         foreach ($keyObjectMap as $hash => $key) {
             $result->offsetSet($key, $this->hashToValueMap[$hash]);
@@ -243,7 +245,10 @@ final class Map implements Iterator, MapInterface, ArrayAccess
             }
         }
 
-        return new static(...$pairs);
+        /** @var static<K,V> $result */
+        $result = new static(...$pairs);
+
+        return $result;
     }
 
     /**
@@ -277,7 +282,10 @@ final class Map implements Iterator, MapInterface, ArrayAccess
             }
         }
 
-        return new static(...$pairs);
+        /** @var static<K,V> $result */
+        $result = new static(...$pairs);
+
+        return $result;
     }
 
     /**
