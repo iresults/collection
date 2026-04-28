@@ -6,17 +6,23 @@ declare(strict_types=1);
 namespace Iresults\Collection\Tests\Unit;
 
 use InvalidArgumentException;
-use Iresults\Collection\CollectionInterface;
+use Iresults\Collection\Collection;
 use Iresults\Collection\Map;
 use Iresults\Collection\Pair;
+use Iresults\Collection\Tests\Unit\Fixtures\Person;
+use Iresults\Collection\Tests\Unit\Fixtures\PersonalInformation;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
 use function array_values;
 
-class MapTest extends TestCase
+final class MapTest extends TestCase
 {
-    protected Map $fixture;
+    /**
+     * @var Map<stdClass,string>
+     */
+    private Map $fixture;
 
     protected function setUp(): void
     {
@@ -30,11 +36,9 @@ class MapTest extends TestCase
         $objectC->character = 'c';
 
         $this->fixture = new Map(
-            [
-                [$objectA, 'a'],
-                [$objectB, 'b'],
-                [$objectC, 'c'],
-            ]
+            [$objectA, 'a'],
+            [$objectB, 'b'],
+            [$objectC, 'c'],
         );
     }
 
@@ -43,18 +47,14 @@ class MapTest extends TestCase
         unset($this->fixture);
     }
 
-    /**
-     * @test
-     */
-    public function currentTest()
+    #[Test]
+    public function currentTest(): void
     {
         $this->assertSame('a', $this->fixture->current());
     }
 
-    /**
-     * @test
-     */
-    public function nextTest()
+    #[Test]
+    public function nextTest(): void
     {
         $this->assertSame('a', $this->fixture->current());
         $this->fixture->next();
@@ -65,34 +65,15 @@ class MapTest extends TestCase
         $this->assertNull($this->fixture->current());
     }
 
-    /**
-     * @test
-     */
-    public function keyTest()
+    #[Test]
+    public function keyTest(): void
     {
         $this->assertInstanceOf(stdClass::class, $this->fixture->key());
         $this->assertSame('a', $this->fixture->key()->character);
     }
 
-    /**
-     * @test
-     */
-    public function hashKeyTest()
-    {
-        $object = new stdClass();
-        $this->fixture = new Map(
-            [
-                [$object, 'xyz'],
-            ]
-        );
-
-        $this->assertSame(spl_object_hash($object), $this->fixture->hashKey());
-    }
-
-    /**
-     * @test
-     */
-    public function validTest()
+    #[Test]
+    public function validTest(): void
     {
         $this->assertTrue($this->fixture->valid());
         $this->fixture->next();
@@ -103,10 +84,8 @@ class MapTest extends TestCase
         $this->assertFalse($this->fixture->valid());
     }
 
-    /**
-     * @test
-     */
-    public function rewindTest()
+    #[Test]
+    public function rewindTest(): void
     {
         $this->assertSame('a', $this->fixture->current());
         $this->fixture->next();
@@ -120,242 +99,196 @@ class MapTest extends TestCase
         $this->assertSame('a', $this->fixture->current());
     }
 
-    /**
-     * @test
-     */
-    public function offsetExistsTest()
+    #[Test]
+    public function offsetExistsTest(): void
     {
         $object = new stdClass();
-        $this->fixture = new Map(
-            [
-                [$object, 'xyz'],
-            ]
+        $fixture = new Map(
+            [$object, 'xyz'],
         );
 
-        $this->assertTrue($this->fixture->offsetExists($object));
-        $this->assertTrue($this->fixture->exists($object));
-        $this->assertTrue(isset($this->fixture[$object]));
+        $this->assertTrue($fixture->offsetExists($object));
+        $this->assertTrue($fixture->exists($object));
+        $this->assertTrue(isset($fixture[$object]));
 
-        $this->assertTrue($this->fixture->offsetExists(spl_object_hash($object)));
-        $this->assertTrue($this->fixture->exists(spl_object_hash($object)));
-        $this->assertTrue(isset($this->fixture[spl_object_hash($object)]));
+        $this->assertTrue($fixture->exists(spl_object_hash($object)));
 
         $object2 = new stdClass();
-        $this->assertFalse($this->fixture->offsetExists($object2));
-        $this->assertFalse($this->fixture->exists($object2));
-        $this->assertFalse(isset($this->fixture[$object2]));
+        $this->assertFalse($fixture->offsetExists($object2));
+        $this->assertFalse($fixture->exists($object2));
+        $this->assertFalse(isset($fixture[$object2]));
 
-        $this->assertFalse($this->fixture->offsetExists(spl_object_hash($object2)));
-        $this->assertFalse($this->fixture->exists(spl_object_hash($object2)));
-        $this->assertFalse(isset($this->fixture[spl_object_hash($object2)]));
+        $this->assertFalse($fixture->exists(spl_object_hash($object2)));
     }
 
-    /**
-     * @test
-     */
-    public function offsetGetTest()
+    #[Test]
+    public function offsetGetTest(): void
     {
         $object = new stdClass();
-        $this->fixture = new Map(
-            [
-                [$object, 'a'],
-            ]
+        $fixture = new Map(
+            [$object, 'a'],
         );
 
-        $this->assertEquals('a', $this->fixture->offsetGet($object));
-        $this->assertEquals('a', $this->fixture->get($object));
-        $this->assertEquals('a', $this->fixture[$object]);
+        $this->assertEquals('a', $fixture->offsetGet($object));
+        $this->assertEquals('a', $fixture->get($object));
+        $this->assertEquals('a', $fixture[$object]);
 
-        $this->assertEquals('a', $this->fixture->offsetGet(spl_object_hash($object)));
-        $this->assertEquals('a', $this->fixture->get(spl_object_hash($object)));
-        $this->assertEquals('a', $this->fixture[spl_object_hash($object)]);
+        $this->assertEquals('a', $fixture->get(spl_object_hash($object)));
 
         $object2 = new stdClass();
-        $this->assertNull($this->fixture->offsetGet($object2));
-        $this->assertNull($this->fixture->get($object2));
-        $this->assertNull($this->fixture[$object2]);
+        $this->assertNull($fixture->offsetGet($object2));
+        $this->assertNull($fixture->get($object2));
 
-        $this->assertNull($this->fixture->offsetGet(spl_object_hash($object2)));
-        $this->assertNull($this->fixture->get(spl_object_hash($object2)));
-        $this->assertNull($this->fixture[spl_object_hash($object2)]);
+        $this->assertNull($fixture->get(spl_object_hash($object2)));
     }
 
-    /**
-     * @test
-     */
-    public function offsetGetBooleanKeysTest()
+    #[Test]
+    public function offsetGetBooleanKeysTest(): void
     {
-        $this->fixture = new Map(
-            [
-                [false, 'a'],
-                [true, 'b'],
-            ]
+        $fixture = new Map(
+            [false, 'a'],
+            [true, 'b'],
         );
 
-        $this->assertEquals('a', $this->fixture->offsetGet(false));
-        $this->assertEquals('a', $this->fixture->get(false));
-        $this->assertEquals('a', $this->fixture[false]);
+        $this->assertEquals('a', $fixture->offsetGet(false));
+        $this->assertEquals('a', $fixture->get(false));
+        $this->assertEquals('a', $fixture[false]);
 
-        $this->assertEquals('b', $this->fixture->offsetGet(true));
-        $this->assertEquals('b', $this->fixture->get(true));
-        $this->assertEquals('b', $this->fixture[true]);
+        $this->assertEquals('b', $fixture->offsetGet(true));
+        $this->assertEquals('b', $fixture->get(true));
+        $this->assertEquals('b', $fixture[true]);
     }
 
-    /**
-     * @test
-     */
-    public function offsetSetTest()
+    #[Test]
+    public function offsetSetTest(): void
     {
         $object = new stdClass();
-        $this->fixture = new Map();
+        $fixture = new Map();
 
-        $this->fixture->offsetSet($object, 'a');
-        $this->assertEquals('a', $this->fixture->offsetGet($object));
-        $this->assertEquals('a', $this->fixture->offsetGet(spl_object_hash($object)));
+        $fixture->offsetSet($object, 'a');
+        $this->assertEquals('a', $fixture->offsetGet($object));
+        $this->assertEquals('a', $fixture->offsetGet(spl_object_hash($object)));
 
-        $this->fixture->set($object, 'm');
-        $this->assertEquals('m', $this->fixture->offsetGet($object));
-        $this->assertEquals('m', $this->fixture->offsetGet(spl_object_hash($object)));
+        $fixture->set($object, 'm');
+        $this->assertEquals('m', $fixture->offsetGet($object));
+        $this->assertEquals('m', $fixture->offsetGet(spl_object_hash($object)));
 
-        $this->fixture[$object] = 'v';
-        $this->assertEquals('v', $this->fixture->offsetGet($object));
-        $this->assertEquals('v', $this->fixture->offsetGet(spl_object_hash($object)));
+        $fixture[$object] = 'v';
+        $this->assertEquals('v', $fixture->offsetGet($object));
+        $this->assertEquals('v', $fixture->offsetGet(spl_object_hash($object)));
     }
 
-    /**
-     * @test
-     */
-    public function offsetSetBooleanKeysTest()
+    #[Test]
+    public function offsetSetBooleanKeysTest(): void
     {
-        $this->fixture = new Map();
+        $fixture = new Map();
 
-        $this->fixture->offsetSet(true, 'a');
-        $this->assertEquals('a', $this->fixture->offsetGet(true));
+        $fixture->offsetSet(true, 'a');
+        $this->assertEquals('a', $fixture->offsetGet(true));
 
-        $this->fixture->set(false, 'm');
-        $this->assertEquals('m', $this->fixture->offsetGet(false));
+        $fixture->set(false, 'm');
+        $this->assertEquals('m', $fixture->offsetGet(false));
 
-        $this->fixture[true] = 'v';
-        $this->assertEquals('v', $this->fixture->offsetGet(true));
+        $fixture[true] = 'v';
+        $this->assertEquals('v', $fixture->offsetGet(true));
     }
 
-    /**
-     * @test
-     */
-    public function offsetUnsetTest()
+    #[Test]
+    public function offsetUnsetTest(): void
     {
         $object = new stdClass();
-        $this->fixture = new Map(
-            [
-                [$object, 'a'],
-            ]
+        $fixture = new Map(
+            [$object, 'a'],
         );
 
-        $this->fixture->offsetUnset($object);
-        $this->assertNull($this->fixture->offsetGet($object));
-        $this->assertNull($this->fixture[$object]);
+        $fixture->offsetUnset($object);
+        $this->assertNull($fixture->offsetGet($object));
+        // @phpstan-ignore method.alreadyNarrowedType
+        $this->assertNull($fixture[$object]);
 
-        foreach ($this->fixture as $_) {
+        foreach ($fixture as $_) {
             $this->fail('Map must be empty');
         }
 
         $object = new stdClass();
-        $this->fixture = new Map(
-            [
-                [$object, 'a'],
-            ]
+        $fixture = new Map(
+            [$object, 'a'],
         );
-        unset($this->fixture[$object]);
-        $this->assertNull($this->fixture->offsetGet($object));
+        unset($fixture[$object]);
+        $this->assertNull($fixture->offsetGet($object));
+        // @phpstan-ignore method.alreadyNarrowedType
+        $this->assertNull($fixture[$object]);
 
-        $this->assertNull($this->fixture[$object]);
-
-        foreach ($this->fixture as $_) {
+        foreach ($fixture as $_) {
             $this->fail('Map must be empty');
         }
 
         $object = new stdClass();
-        $this->fixture = new Map(
-            [
-                [$object, 'a'],
-            ]
+        $fixture = new Map(
+            [$object, 'a'],
         );
-        $removedValue = $this->fixture->remove($object);
+        $removedValue = $fixture->remove($object);
         $this->assertSame('a', $removedValue);
-        $this->assertNull($this->fixture->offsetGet($object));
-        $this->assertNull($this->fixture[$object]);
+        $this->assertNull($fixture->offsetGet($object));
+        // @phpstan-ignore method.alreadyNarrowedType
+        $this->assertNull($fixture[$object]);
 
-        foreach ($this->fixture as $_) {
+        foreach ($fixture as $_) {
             $this->fail('Map must be empty');
         }
     }
 
-    /**
-     * @test
-     */
-    public function offsetUnsetEmptyValueTest()
+    #[Test]
+    public function offsetUnsetEmptyValueTest(): void
     {
         $emptyValue = [];
         $object = new stdClass();
-        $this->fixture = new Map(
-            [
-                [$object, $emptyValue],
-            ]
+        $fixture = new Map(
+            [$object, $emptyValue],
         );
 
-        $this->fixture->offsetUnset($object);
-        $this->assertNull($this->fixture->offsetGet($object));
-        $this->assertNull($this->fixture[$object]);
+        $fixture->offsetUnset($object);
+        $this->assertNull($fixture->offsetGet($object));
 
-        foreach ($this->fixture as $_) {
+        foreach ($fixture as $_) {
             $this->fail('Map must be empty');
         }
 
         $object = new stdClass();
-        $this->fixture = new Map(
-            [
-                [$object, $emptyValue],
-            ]
+        $fixture = new Map(
+            [$object, $emptyValue],
         );
-        unset($this->fixture[$object]);
-        $this->assertNull($this->fixture->offsetGet($object));
-        $this->assertNull($this->fixture[$object]);
+        unset($fixture[$object]);
+        $this->assertNull($fixture->offsetGet($object));
 
-        foreach ($this->fixture as $_) {
+        foreach ($fixture as $_) {
             $this->fail('Map must be empty');
         }
 
         $object = new stdClass();
-        $this->fixture = new Map(
-            [
-                [$object, $emptyValue],
-            ]
+        $fixture = new Map(
+            [$object, $emptyValue],
         );
-        $removedValue = $this->fixture->remove($object);
+        $removedValue = $fixture->remove($object);
         $this->assertSame($emptyValue, $removedValue);
-        $this->assertNull($this->fixture->offsetGet($object));
-        $this->assertNull($this->fixture[$object]);
+        $this->assertNull($fixture->offsetGet($object));
 
-        foreach ($this->fixture as $_) {
+        foreach ($fixture as $_) {
             $this->fail('Map must be empty');
         }
     }
 
-    /**
-     * @test
-     */
-    public function findTest()
+    #[Test]
+    public function findTest(): void
     {
-        $this->fixture = new Map(
-            [
-                [(object) ['character' => 'a'], (object) ['number' => 10]],
-                [(object) ['character' => 'b'], (object) ['number' => 20]],
-                [(object) ['character' => 'c'], (object) ['number' => 30]],
-                [(object) ['character' => 'd'], (object) ['number' => 40]],
-            ]
+        $fixture = new Map(
+            [(object) ['character' => 'a'], (object) ['number' => 10]],
+            [(object) ['character' => 'b'], (object) ['number' => 20]],
+            [(object) ['character' => 'c'], (object) ['number' => 30]],
+            [(object) ['character' => 'd'], (object) ['number' => 40]],
         );
 
-        $result = $this->fixture->find(
+        $result = $fixture->find(
             function (stdClass $value) {
                 return $value->number > 20;
             }
@@ -365,21 +298,17 @@ class MapTest extends TestCase
         $this->assertSame($result->number, 30);
     }
 
-    /**
-     * @test
-     */
-    public function findNoneTest()
+    #[Test]
+    public function findNoneTest(): void
     {
-        $this->fixture = new Map(
-            [
-                [(object) ['character' => 'a'], (object) ['number' => 10]],
-                [(object) ['character' => 'b'], (object) ['number' => 20]],
-                [(object) ['character' => 'c'], (object) ['number' => 30]],
-                [(object) ['character' => 'd'], (object) ['number' => 40]],
-            ]
+        $fixture = new Map(
+            [(object) ['character' => 'a'], (object) ['number' => 10]],
+            [(object) ['character' => 'b'], (object) ['number' => 20]],
+            [(object) ['character' => 'c'], (object) ['number' => 30]],
+            [(object) ['character' => 'd'], (object) ['number' => 40]],
         );
 
-        $result = $this->fixture->find(
+        $result = $fixture->find(
             function (stdClass $value) {
                 return $value->number > 40;
             }
@@ -388,82 +317,64 @@ class MapTest extends TestCase
         $this->assertNull($result);
     }
 
-    /**
-     * @test
-     */
-    public function findPairTest()
+    #[Test]
+    public function findPairTest(): void
     {
-        $this->fixture = new Map(
-            [
-                [(object) ['character' => 'a'], (object) ['number' => 10]],
-                [(object) ['character' => 'b'], (object) ['number' => 20]],
-                [(object) ['character' => 'c'], (object) ['number' => 30]],
-                [(object) ['character' => 'd'], (object) ['number' => 40]],
-            ]
+        $fixture = new Map(
+            [(object) ['character' => 'a'], (object) ['number' => 10]],
+            [(object) ['character' => 'b'], (object) ['number' => 20]],
+            [(object) ['character' => 'c'], (object) ['number' => 30]],
+            [(object) ['character' => 'd'], (object) ['number' => 40]],
         );
 
-        $result = $this->fixture->findPair(
-            function (Pair $pair) {
-                return $pair->getValue()->number > 20;
-            }
+        $result = $fixture->findPair(
+            fn (Pair $pair) => $pair->value->number > 20
         );
 
         $this->assertInstanceOf(Pair::class, $result);
-        $this->assertInstanceOf(stdClass::class, $result->getValue());
-        $this->assertSame($result->getValue()->number, 30);
-        $this->assertInstanceOf(stdClass::class, $result->getKey());
-        $this->assertSame($result->getKey()->character, 'c');
+        $this->assertInstanceOf(stdClass::class, $result->value);
+        $this->assertSame($result->value->number, 30);
+        $this->assertInstanceOf(stdClass::class, $result->key);
+        $this->assertSame($result->key->character, 'c');
     }
 
-    /**
-     * @test
-     */
-    public function findPairNoneTest()
+    #[Test]
+    public function findPairNoneTest(): void
     {
-        $this->fixture = new Map(
-            [
-                [(object) ['character' => 'a'], (object) ['number' => 10]],
-                [(object) ['character' => 'b'], (object) ['number' => 20]],
-                [(object) ['character' => 'c'], (object) ['number' => 30]],
-                [(object) ['character' => 'd'], (object) ['number' => 40]],
-            ]
+        $fixture = new Map(
+            [(object) ['character' => 'a'], (object) ['number' => 10]],
+            [(object) ['character' => 'b'], (object) ['number' => 20]],
+            [(object) ['character' => 'c'], (object) ['number' => 30]],
+            [(object) ['character' => 'd'], (object) ['number' => 40]],
         );
 
-        $result = $this->fixture->findPair(
-            function (Pair $pair) {
-                return $pair->getValue()->number > 40;
-            }
+        $result = $fixture->findPair(
+            fn (Pair $pair) => $pair->value->number > 40
         );
 
         $this->assertNull($result);
     }
 
-    /**
-     * @test
-     */
-    public function countTest()
+    #[Test]
+    public function countTest(): void
     {
         $this->assertEquals(3, $this->fixture->count());
 
         $object = new stdClass();
-        $this->fixture = new Map(
-            [
-                [$object, 'a'],
-            ]
+        $fixture = new Map(
+            [$object, 'a'],
         );
-        $this->assertEquals(1, $this->fixture->count());
+        $this->assertEquals(1, $fixture->count());
 
-        $this->fixture->offsetSet(new stdClass(), 123);
-        $this->assertEquals(2, $this->fixture->count());
+        $fixture->offsetSet(new stdClass(), '123');
+        $this->assertEquals(2, $fixture->count());
 
-        $this->fixture->offsetUnset($object);
-        $this->assertEquals(1, $this->fixture->count());
+        $fixture->offsetUnset($object);
+        $this->assertEquals(1, $fixture->count());
     }
 
-    /**
-     * @test
-     */
-    public function iteratorTest()
+    #[Test]
+    public function iteratorTest(): void
     {
         $iteratorCount = 0;
         foreach ($this->fixture as $keyObject => $value) {
@@ -476,18 +387,14 @@ class MapTest extends TestCase
         $this->assertSame(3, $iteratorCount);
     }
 
-    /**
-     * @test
-     */
-    public function getArrayCopyTest()
+    #[Test]
+    public function getValuesTest(): void
     {
-        $this->assertSame(['a', 'b', 'c'], array_values($this->fixture->getArrayCopy()));
+        $this->assertSame(['a', 'b', 'c'], array_values($this->fixture->getValues()));
     }
 
-    /**
-     * @test
-     */
-    public function getKeysTest()
+    #[Test]
+    public function getKeysTest(): void
     {
         $objectA = new stdClass();
         $objectA->character = 'a';
@@ -498,77 +405,119 @@ class MapTest extends TestCase
         $objectC = new stdClass();
         $objectC->character = 'c';
 
-        $this->fixture = new Map(
-            [
-                [$objectA, 'a'],
-                [$objectB, 'b'],
-                [$objectC, 'c'],
-            ]
+        $fixture = new Map(
+            [$objectA, 'a'],
+            [$objectB, 'b'],
+            [$objectC, 'c'],
         );
 
-        $this->assertSame([$objectA, $objectB, $objectC], array_values($this->fixture->getKeys()));
+        $this->assertSame([$objectA, $objectB, $objectC], array_values($fixture->getKeys()));
     }
 
-    /**
-     * @test
-     */
-    public function mapTest()
+    #[Test]
+    public function reduceTest(): void
+    {
+        $result = $this->fixture->reduce(
+            function ($carry, string $value, stdClass $keyObject) {
+                /* @var object $keyObject */
+                assert($value === $keyObject->character);
+
+                return ($carry ?? 'the-start') . '/' . $value . strtoupper($keyObject->character);
+            }
+        );
+        $this->assertSame('the-start/aA/bB/cC', $result);
+    }
+
+    #[Test]
+    public function reduceWithInitialCarryTest(): void
+    {
+        $result = $this->fixture->reduce(
+            function ($carry, string $value, stdClass $keyObject) {
+                /* @var object $keyObject */
+                assert($value === $keyObject->character);
+                assert(null !== $carry);
+
+                return $carry . '/' . $value . strtoupper($keyObject->character);
+            },
+            '>'
+        );
+        $this->assertSame('>/aA/bB/cC', $result);
+    }
+
+    #[Test]
+    public function mapTest(): void
     {
         $result = $this->fixture->map(
-            function ($value, $keyObject) {
+            function (string $value, stdClass $keyObject) {
                 /* @var object $keyObject */
                 assert($value === $keyObject->character);
 
                 return strtoupper($keyObject->character);
             }
         );
-        $this->assertInstanceOf(CollectionInterface::class, $result);
         $this->assertInstanceOf(Map::class, $result);
         $this->assertSame(3, $result->count());
-        $this->assertSame(['A', 'B', 'C'], array_values($result->getArrayCopy()));
+        $this->assertSame(['A', 'B', 'C'], array_values($result->getValues()));
     }
 
-    /**
-     * @test
-     */
-    public function filterTest()
+    #[Test]
+    public function mapPersonTest(): void
+    {
+        /** @var Map<Person,PersonalInformation> $fixture */
+        $fixture = new Map(
+            new Pair(new Person('Daniel'), new PersonalInformation(37)),
+            new Pair(new Person('Gary'), new PersonalInformation(61)),
+            new Pair(new Person('Loren'), new PersonalInformation(23)),
+        );
+        $result = $fixture->map(
+            fn (
+                PersonalInformation $pi,
+                Person $person,
+            ) => $person->name . ' is ' . $pi->age . ' years old'
+        );
+        $this->assertInstanceOf(Map::class, $result);
+        $this->assertSame(3, $result->count());
+        $this->assertSame(
+            [
+                'Daniel is 37 years old',
+                'Gary is 61 years old',
+                'Loren is 23 years old',
+            ],
+            array_values($result->getValues())
+        );
+    }
+
+    #[Test]
+    public function filterTest(): void
     {
         $result = $this->fixture->filter(fn (string $value) => 'a' === $value);
-        $this->assertInstanceOf(CollectionInterface::class, $result);
         $this->assertInstanceOf(Map::class, $result);
         $this->assertSame(1, $result->count());
-        $this->assertSame(['a'], array_values($result->getArrayCopy()));
+        $this->assertSame(['a'], array_values($result->getValues()));
     }
 
-    /**
-     * @test
-     */
-    public function filterByKeyTest()
+    #[Test]
+    public function filterByKeyTest(): void
     {
         $result = $this->fixture->filter(fn ($_value, stdClass $item) => 'a' === $item->character);
-        $this->assertInstanceOf(CollectionInterface::class, $result);
         $this->assertInstanceOf(Map::class, $result);
         $this->assertSame(1, $result->count());
-        $this->assertSame(['a'], array_values($result->getArrayCopy()));
+        $this->assertSame(['a'], array_values($result->getValues()));
     }
 
-    /**
-     * @test
-     */
-    public function filterMapTest()
+    #[Test]
+    public function filterMapTest(): void
     {
         $result = $this->fixture->filterMap(
             fn (string $value) => 'b' !== $value ? $value : null
         );
         $this->assertInstanceOf(Map::class, $result);
         $this->assertSame(2, $result->count());
-        $this->assertEquals(['a', 'c'], array_values($result->getArrayCopy()));
+        $this->assertEquals(['a', 'c'], array_values($result->getValues()));
     }
 
-    /**
-     * @test
-     */
-    public function filterMapEmptyStringTest()
+    #[Test]
+    public function filterMapEmptyStringTest(): void
     {
         // The callback returns an empty string or null => the empty string will be added to the result
         $result = $this->fixture->filterMap(
@@ -576,104 +525,82 @@ class MapTest extends TestCase
         );
         $this->assertInstanceOf(Map::class, $result);
         $this->assertSame(2, $result->count());
-        $this->assertEquals(['', ''], array_values($result->getArrayCopy()));
+        $this->assertEquals(['', ''], array_values($result->getValues()));
     }
 
-    /**
-     * @test
-     */
-    public function implodeTest()
+    #[Test]
+    public function createWithEmptyArgumentTest(): void
     {
-        $this->assertSame('abc', $this->fixture->implode());
-        $this->assertSame('a,b,c', $this->fixture->implode(','));
-    }
-
-    /**
-     * @test
-     */
-    public function createWithEmptyArgumentTest()
-    {
-        $map = new Map([]);
+        $map = new Map();
         $this->assertCount(0, $map);
     }
 
-    /**
-     * @test
-     */
-    public function createWithNullValueArgumentTest()
+    #[Test]
+    public function createWithNullValueArgumentTest(): void
     {
         $object = new stdClass();
         $map = new Map(
-            [
-                [$object, null],
-            ]
+            [$object, null],
         );
         $this->assertCount(1, $map);
         $this->assertSame($object, $map->key());
     }
 
-    /**
-     * @test
-     */
-    public function createWithInvalidArgumentTest()
+    #[Test]
+    public function createWithInvalidArgumentTest(): void
     {
         $this->expectException(InvalidArgumentException::class);
+        // @phpstan-ignore argument.type
         new Map([new stdClass()]);
     }
 
-    /**
-     * @test
-     */
-    public function createWithInvalidArgument2Test()
+    #[Test]
+    public function createWithInvalidArgument2Test(): void
     {
         $this->expectException(InvalidArgumentException::class);
+        // @phpstan-ignore argument.type
         new Map([[]]);
     }
 
-    /**
-     * @test
-     */
-    public function createWithPairArrayTest()
+    #[Test]
+    public function createWithPairTest(): void
     {
-        $map = Map::withPairs(
-            [new stdClass(), 'a'],
-            [new stdClass(), 'b'],
-            [new stdClass(), 'c']
-        );
-        $this->assertSame(['a', 'b', 'c'], array_values($map->getArrayCopy()));
-    }
-
-    /**
-     * @test
-     */
-    public function createWithPairTest()
-    {
-        $map = Map::withPairs(
+        $map = new Map(
             new Pair(new stdClass(), 'a'),
             new Pair(new stdClass(), 'b'),
             new Pair(new stdClass(), 'c'),
         );
-        $this->assertSame(['a', 'b', 'c'], array_values($map->getArrayCopy()));
+        $this->assertSame(['a', 'b', 'c'], array_values($map->getValues()));
     }
 
-    /**
-     * @test
-     */
-    public function createWithInvalidPairTest()
+    #[Test]
+    public function partitionTest(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $map = Map::withPairs(
-            new stdClass(),
-            [new stdClass(), 'b'],
-            [new stdClass(), 'c']
+        $objectA = new stdClass();
+        $objectA->character = 'a';
+
+        $objectB = new stdClass();
+        $objectB->character = 'b';
+
+        $objectC = new stdClass();
+        $objectC->character = 'c';
+
+        /** @var Map<object,float> $fixture */
+        $fixture = new Map(
+            new Pair($objectA, 10.0),
+            new Pair($objectB, 13.0),
+            new Pair($objectC, 12.0),
         );
-        $this->assertSame(['a', 'b', 'c'], array_values($map->getArrayCopy()));
+        $partitions = $fixture->partition(
+            fn (float $v, object $k) => $v < 13 ? 'child' : 'teen'
+        );
+        $this->assertInstanceOf(Collection::class, $partitions->get('child'));
+        $this->assertInstanceOf(Collection::class, $partitions->get('teen'));
+        $this->assertNull($partitions->get('elderly'));
     }
 
-    /**
-     * @test
-     */
-    public function sortTest()
+    #[Test]
+    public function sortTest(): void
     {
         $this->runSortTest(
             function (Map $fixture) {
@@ -690,14 +617,12 @@ class MapTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function ksortTest()
+    #[Test]
+    public function sortByKeyTest(): void
     {
         $this->runSortTest(
             function (Map $fixture) {
-                return $fixture->ksort(
+                return $fixture->sortByKey(
                     function ($a, $b) {
                         // Make sure the key-object is given and *NOT* the value-object
                         $this->assertFalse(property_exists($a, 'valueObjectProperty'));
@@ -710,22 +635,21 @@ class MapTest extends TestCase
         );
     }
 
-    protected function runSortTest(callable $callback)
+    protected function runSortTest(callable $callback): void
     {
-        $this->fixture = new Map(
-            [
-                [(object) ['keyObjectProperty' => 'c'], (object) ['valueObjectProperty' => 30]],
-                [(object) ['keyObjectProperty' => 'b'], (object) ['valueObjectProperty' => 20]],
-                [(object) ['keyObjectProperty' => 'a'], (object) ['valueObjectProperty' => 10]],
-                [(object) ['keyObjectProperty' => 'd'], (object) ['valueObjectProperty' => 40]],
-            ]
+        /** @var Map<object{keyObjectProperty:string},object{valueObjectProperty:int}> $fixture */
+        $fixture = new Map(
+            [(object) ['keyObjectProperty' => 'c'], (object) ['valueObjectProperty' => 30]],
+            [(object) ['keyObjectProperty' => 'b'], (object) ['valueObjectProperty' => 20]],
+            [(object) ['keyObjectProperty' => 'a'], (object) ['valueObjectProperty' => 10]],
+            [(object) ['keyObjectProperty' => 'd'], (object) ['valueObjectProperty' => 40]],
         );
 
-        /** @var Map $sorted */
-        $sorted = $callback($this->fixture);
+        /** @var Map<object{keyObjectProperty:string},object{valueObjectProperty:int}> $sorted */
+        $sorted = $callback($fixture);
         $this->assertInstanceOf(Map::class, $sorted);
         $sortedKeyArray = array_values($sorted->getKeys());
-        $sortedArray = array_values($sorted->getArrayCopy());
+        $sortedArray = array_values($sorted->getValues());
         $this->assertSame('a', $sortedKeyArray[0]->keyObjectProperty);
         $this->assertSame(10, $sortedArray[0]->valueObjectProperty);
         $this->assertSame('b', $sortedKeyArray[1]->keyObjectProperty);

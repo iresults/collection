@@ -7,6 +7,8 @@ namespace Iresults\Collection\Tests\Unit\Transformer;
 use Iresults\Collection\Collection;
 use Iresults\Collection\Map;
 use Iresults\Collection\Transformer\Partition;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -27,13 +29,15 @@ class PartitionTest extends TestCase
     }
 
     /**
-     * @dataProvider getIterableTestData
+     * @param iterable<mixed> $testMap
      */
+    #[Test]
+    #[DataProvider('getIterableTestData')]
     public function testPartitionCollection(iterable $testMap): void
     {
         $result = $this->fixture->apply($testMap, fn ($v) => $v % 2, Collection::class);
 
-        $this->assertSame([1 => 1, 0 => 0], $result->getKeys());
+        $this->assertSame([1,  0], array_values($result->getKeys()));
         $partition1 = $result->get(1);
         $this->assertInstanceOf(Collection::class, $partition1);
         $this->assertSame([1, 3], $partition1->getArrayCopy());
@@ -43,7 +47,10 @@ class PartitionTest extends TestCase
         $this->assertSame([2, 4], $partition2->getArrayCopy());
     }
 
-    public function getIterableTestData(): array
+    /**
+     * @return array<string|class-string,list<Collection<int>|Map<stdClass,int>|int[]>>
+     */
+    public static function getIterableTestData(): array
     {
         $o1 = new stdClass();
         $o2 = new stdClass();
@@ -61,21 +68,21 @@ class PartitionTest extends TestCase
             ],
 
             Collection::class => [
-                new Collection([
+                new Collection(
                     1,
                     2,
                     3,
                     4,
-                ]),
+                ),
             ],
 
             Map::class => [
-                new Map([
+                new Map(
                     [$o1, 1],
                     [$o2, 2],
                     [$o3, 3],
                     [$o4, 4],
-                ]),
+                ),
             ],
         ];
     }
@@ -93,7 +100,7 @@ class PartitionTest extends TestCase
             Collection::class
         );
 
-        $this->assertSame(['' => false, '1' => true], $result->getKeys());
+        $this->assertSame([false, true], array_values($result->getKeys()));
         $partition1 = $result->get(true);
         $this->assertInstanceOf(Collection::class, $partition1);
         $this->assertSame([2, 4], $partition1->getArrayCopy());

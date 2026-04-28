@@ -1,12 +1,8 @@
-<phpunit
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/9.5/phpunit.xsd"
-        backupGlobals="true"
-        bootstrap="./Tests/UnitTestsBootstrap.php"
-        verbose="true">
-    <testsuites>
-        <testsuite name="Unit Tests">
-            <directory>./Tests/Unit</directory>
-        </testsuite>
-    </testsuites>
+<?xml version="1.0"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" cacheDirectory=".phpunit.cache">
+  <testsuites>
+    <testsuite name="Unit Tests">
+      <directory>./Tests/Unit</directory>
+    </testsuite>
+  </testsuites>
 </phpunit>

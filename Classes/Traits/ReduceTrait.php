@@ -8,7 +8,7 @@ use Iresults\Collection\Transformer\Reduce;
 
 trait ReduceTrait
 {
-    public function reduce(callable $callback, $carry = null)
+    public function reduce(callable $callback, mixed $carry = null): mixed
     {
         $transformer = new Reduce();
 

@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Iresults\Collection\Tests\Unit\Fixtures;
 
-use Iresults\Collection\BaseTypedCollection;
+use Iresults\Collection\AbstractCollection;
 
-class PersonCollection extends BaseTypedCollection
+/**
+ * @extends AbstractCollection<Person>
+ */
+class PersonCollection extends AbstractCollection
 {
-    public function getType(): string
+    public function __construct(Person ...$items)
     {
-        return Person::class;
+        parent::__construct(...$items);
     }
 }

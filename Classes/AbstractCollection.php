@@ -5,53 +5,49 @@ declare(strict_types=1);
 namespace Iresults\Collection;
 
 use ArrayIterator;
-use Iresults\Collection\Traits\FilterMapTrait;
-use Iresults\Collection\Traits\FilterTrait;
-use Iresults\Collection\Traits\MapTrait;
-use Iresults\Collection\Traits\PartitionTrait;
+use BadMethodCallException;
 use Iresults\Collection\Traits\ReduceTrait;
+use Iresults\Collection\Transformer\Partition as PartitionTransformer;
 use Iresults\Collection\Utility\TypeUtility;
 use IteratorAggregate;
-use ReturnTypeWillChange;
 
 /**
- * Abstract base collection container
+ * Immutable list of items
  *
- * @internal
+ * @template V
+ *
+ * @implements IteratorAggregate<int,V>
+ * @implements CollectionInterface<V>
+ * @implements MergeableInterface<V>
  */
 abstract class AbstractCollection implements IteratorAggregate, CollectionInterface, MergeableInterface
 {
-    use PartitionTrait;
     use ReduceTrait;
-    use FilterTrait;
-    use MapTrait;
-    use FilterMapTrait;
 
     /**
      * The items managed by this collection
+     *
+     * @var array<int,V>
      */
     protected array $items = [];
 
     /**
-     * AbstractCollection constructor
-     *
-     * This constructor is not allowed to be called directly. So `new SubCollection()` is denied *unless*
-     * `SubCollection` explicitly defines a public constructor method (like `BaseTypedCollection` does)
+     * @param V $items
      */
-    protected function __construct(iterable $items = [])
+    public function __construct(...$items)
     {
-        $this->items = TypeUtility::iterableToArray($items);
+        $this->items = array_values($items);
     }
 
     /**
-     * @return static
+     * @param iterable<V> $collections
      */
-    public function merge(...$arguments): CollectionInterface
+    public function merge(iterable ...$collections): static
     {
-        return new static($this->mergeArguments($arguments));
+        return $this->buildStatic($this->mergeIterables($collections));
     }
 
-    public function find(callable $callback)
+    public function find(callable $callback): mixed
     {
         foreach ($this->items as $item) {
             if ($callback($item)) {
@@ -67,30 +63,42 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
         return implode($glue, $this->getArrayCopy());
     }
 
+    /**
+     * @return ArrayIterator<int,V>
+     */
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->items);
     }
 
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->items[$offset]);
     }
 
-    #[ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->items[$offset];
     }
 
-    public function offsetSet($offset, $value): void
+    /**
+     * @deprecated
+     *
+     * @internal
+     */
+    public function offsetSet(mixed $offset, mixed $value): void
     {
-        $this->items[$offset] = $value;
+        throw new BadMethodCallException('immutable');
     }
 
-    public function offsetUnset($offset): void
+    /**
+     * @deprecated
+     *
+     * @internal
+     */
+    public function offsetUnset(mixed $offset): void
     {
-        unset($this->items[$offset]);
+        throw new BadMethodCallException('immutable');
     }
 
     public function getArrayCopy(): array
@@ -103,26 +111,70 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
         return count($this->items);
     }
 
-    /**
-     * @return static
-     */
-    public function sort(callable $callback): CollectionInterface
+    public function sort(callable $callback): static
     {
         $items = $this->items;
         uasort($items, $callback);
 
-        return new static($items);
+        return $this->buildStatic($items);
     }
 
-    public function ksort(callable $callback): CollectionInterface
+    public function map(callable $callback): CollectionInterface
     {
-        $items = $this->items;
-        uksort($items, $callback);
-
-        return new static($items);
+        return new Collection(
+            ...array_map(
+                $callback,
+                $this->items,
+                array_keys($this->items),
+            ),
+        );
     }
 
-    protected function mergeArguments(array $arguments): array
+    public function filter(callable $callback): static
+    {
+        return $this->buildStatic(array_filter(
+            $this->items,
+            $callback,
+            ARRAY_FILTER_USE_BOTH
+        ));
+    }
+
+    public function filterMap(callable $callback): CollectionInterface
+    {
+        // @phpstan-ignore return.type
+        return new Collection(...array_filter(
+            array_map(
+                $callback,
+                $this->items,
+                array_keys($this->items),
+            ),
+            fn ($x) => null !== $x,
+        ));
+    }
+
+    /**
+     * @template R
+     *
+     * @param callable(V, int): R $callback
+     *
+     * @return MapInterface<R, CollectionInterface<V>>
+     */
+    public function partition(callable $callback): MapInterface
+    {
+        // @phpstan-ignore return.type,argument.templateType
+        return (new PartitionTransformer())->apply(
+            $this,
+            $callback,
+            Collection::class
+        );
+    }
+
+    /**
+     * @param iterable<V>[] $arguments
+     *
+     * @return array<K,V>
+     */
+    protected function mergeIterables(array $arguments): array
     {
         $preparedArguments = array_map(
             function (iterable $argument): array {
@@ -132,6 +184,19 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
         );
         array_unshift($preparedArguments, $this->getArrayCopy());
 
-        return call_user_func_array('array_merge', $preparedArguments);
+        return array_merge(...$preparedArguments);
+    }
+
+    /**
+     * We expect subclasses to keep the constructor's variadic signature. But
+     * to allow the subclasses to specify a type, we must not enforce this
+     * signature (i.e. we must not add the signature to the `CollectionInterface`)
+     *
+     * @param array<int|string,V> $items
+     */
+    private static function buildStatic(array $items): static
+    {
+        // @phpstan-ignore new.static
+        return new static(...$items);
     }
 }

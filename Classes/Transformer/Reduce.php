@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Iresults\Collection\Transformer;
 
-class Reduce
+final class Reduce
 {
     /**
      * @template K
@@ -17,8 +17,11 @@ class Reduce
      *
      * @return R
      */
-    public function apply(iterable $collection, callable $callback, $carry)
-    {
+    public function apply(
+        iterable $collection,
+        callable $callback,
+        mixed $carry,
+    ): mixed {
         foreach ($collection as $keyObject => $value) {
             $carry = $callback($carry, $value, $keyObject);
         }

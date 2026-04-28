@@ -4,25 +4,14 @@ declare(strict_types=1);
 
 namespace Iresults\Collection\Tests\Unit\Fixtures;
 
-class Person
+final readonly class Person
 {
-    private $name;
-
-    /**
-     * Person constructor.
-     */
-    public function __construct($name = null)
+    public function __construct(public string $name)
     {
         static $counter = 0;
-        $this->name = $name ?: ('Person ' . ++$counter);
     }
 
-    public function __toString()
-    {
-        return $this->name;
-    }
-
-    public function getName()
+    public function __toString(): string
     {
         return $this->name;
     }
