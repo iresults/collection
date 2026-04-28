@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Iresults\Collection\Tests\Unit;
@@ -7,11 +8,11 @@ use ArrayObject;
 use Iresults\Collection\BaseTypedCollection;
 use Iresults\Collection\Collection;
 use Iresults\Collection\Exception\InvalidArgumentTypeException;
-use Iresults\Collection\Map;
 use Iresults\Collection\Tests\Unit\Fixtures\Address;
 use Iresults\Collection\Tests\Unit\Fixtures\Person;
 use Iresults\Collection\Tests\Unit\Fixtures\PersonCollection;
 use PHPUnit\Framework\TestCase;
+
 use function array_values;
 
 class BaseTypedCollectionTest extends TestCase
@@ -63,7 +64,7 @@ class BaseTypedCollectionTest extends TestCase
     public function mapTest()
     {
         $result = $this->fixture->map(
-            fn(Person $item) => strtoupper($item->getName())
+            fn (Person $item) => strtoupper($item->getName())
         );
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(3, $result->count());
@@ -76,7 +77,7 @@ class BaseTypedCollectionTest extends TestCase
     public function mapTypedTest()
     {
         $result = $this->fixture->mapTyped(
-            fn(Person $item) => new Person(strtoupper($item->getName()))
+            fn (Person $item) => new Person(strtoupper($item->getName()))
         );
         $this->assertInstanceOf(BaseTypedCollection::class, $result);
         $this->assertInstanceOf(PersonCollection::class, $result);
@@ -90,7 +91,7 @@ class BaseTypedCollectionTest extends TestCase
     public function filterTest()
     {
         $result = $this->fixture->filter(
-            fn(Person $item) => $item->getName() === 'Gert'
+            fn (Person $item) => 'Gert' === $item->getName()
         );
         $this->assertInstanceOf(BaseTypedCollection::class, $result);
         $this->assertInstanceOf(PersonCollection::class, $result);
@@ -104,7 +105,7 @@ class BaseTypedCollectionTest extends TestCase
     public function filterMapTest()
     {
         $result = $this->fixture->filterMap(
-            fn(Person $item) => $item->getName() !== 'Gert' ? $item : null
+            fn (Person $item) => 'Gert' !== $item->getName() ? $item : null
         );
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(2, $result->count());
@@ -121,7 +122,7 @@ class BaseTypedCollectionTest extends TestCase
     {
         // The callback returns an empty string or null => the empty string will be added to the result
         $result = $this->fixture->filterMap(
-            fn(Person $item) => $item->getName() !== 'Gert' ? '' : null
+            fn (Person $item) => 'Gert' !== $item->getName() ? '' : null
         );
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(2, $result->count());

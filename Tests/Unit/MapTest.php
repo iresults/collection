@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpIllegalArrayKeyTypeInspection */
 declare(strict_types=1);
 
@@ -10,13 +11,11 @@ use Iresults\Collection\Map;
 use Iresults\Collection\Pair;
 use PHPUnit\Framework\TestCase;
 use stdClass;
+
 use function array_values;
 
 class MapTest extends TestCase
 {
-    /**
-     * @var Map
-     */
     protected Map $fixture;
 
     protected function setUp(): void
@@ -349,10 +348,10 @@ class MapTest extends TestCase
     {
         $this->fixture = new Map(
             [
-                [(object)["character" => 'a'], (object)["number" => 10]],
-                [(object)["character" => 'b'], (object)["number" => 20]],
-                [(object)["character" => 'c'], (object)["number" => 30]],
-                [(object)["character" => 'd'], (object)["number" => 40]],
+                [(object) ['character' => 'a'], (object) ['number' => 10]],
+                [(object) ['character' => 'b'], (object) ['number' => 20]],
+                [(object) ['character' => 'c'], (object) ['number' => 30]],
+                [(object) ['character' => 'd'], (object) ['number' => 40]],
             ]
         );
 
@@ -373,10 +372,10 @@ class MapTest extends TestCase
     {
         $this->fixture = new Map(
             [
-                [(object)["character" => 'a'], (object)["number" => 10]],
-                [(object)["character" => 'b'], (object)["number" => 20]],
-                [(object)["character" => 'c'], (object)["number" => 30]],
-                [(object)["character" => 'd'], (object)["number" => 40]],
+                [(object) ['character' => 'a'], (object) ['number' => 10]],
+                [(object) ['character' => 'b'], (object) ['number' => 20]],
+                [(object) ['character' => 'c'], (object) ['number' => 30]],
+                [(object) ['character' => 'd'], (object) ['number' => 40]],
             ]
         );
 
@@ -396,10 +395,10 @@ class MapTest extends TestCase
     {
         $this->fixture = new Map(
             [
-                [(object)["character" => 'a'], (object)["number" => 10]],
-                [(object)["character" => 'b'], (object)["number" => 20]],
-                [(object)["character" => 'c'], (object)["number" => 30]],
-                [(object)["character" => 'd'], (object)["number" => 40]],
+                [(object) ['character' => 'a'], (object) ['number' => 10]],
+                [(object) ['character' => 'b'], (object) ['number' => 20]],
+                [(object) ['character' => 'c'], (object) ['number' => 30]],
+                [(object) ['character' => 'd'], (object) ['number' => 40]],
             ]
         );
 
@@ -423,10 +422,10 @@ class MapTest extends TestCase
     {
         $this->fixture = new Map(
             [
-                [(object)["character" => 'a'], (object)["number" => 10]],
-                [(object)["character" => 'b'], (object)["number" => 20]],
-                [(object)["character" => 'c'], (object)["number" => 30]],
-                [(object)["character" => 'd'], (object)["number" => 40]],
+                [(object) ['character' => 'a'], (object) ['number' => 10]],
+                [(object) ['character' => 'b'], (object) ['number' => 20]],
+                [(object) ['character' => 'c'], (object) ['number' => 30]],
+                [(object) ['character' => 'd'], (object) ['number' => 40]],
             ]
         );
 
@@ -468,8 +467,8 @@ class MapTest extends TestCase
     {
         $iteratorCount = 0;
         foreach ($this->fixture as $keyObject => $value) {
-            $iteratorCount++;
-            /** @var object $keyObject */
+            ++$iteratorCount;
+            /* @var object $keyObject */
             $this->assertInstanceOf(stdClass::class, $keyObject);
             $this->assertIsString($value);
             $this->assertEquals($value, $keyObject->character);
@@ -517,7 +516,7 @@ class MapTest extends TestCase
     {
         $result = $this->fixture->map(
             function ($value, $keyObject) {
-                /** @var object $keyObject */
+                /* @var object $keyObject */
                 assert($value === $keyObject->character);
 
                 return strtoupper($keyObject->character);
@@ -534,7 +533,7 @@ class MapTest extends TestCase
      */
     public function filterTest()
     {
-        $result = $this->fixture->filter(fn(string $value) => $value === 'a');
+        $result = $this->fixture->filter(fn (string $value) => 'a' === $value);
         $this->assertInstanceOf(CollectionInterface::class, $result);
         $this->assertInstanceOf(Map::class, $result);
         $this->assertSame(1, $result->count());
@@ -546,7 +545,7 @@ class MapTest extends TestCase
      */
     public function filterByKeyTest()
     {
-        $result = $this->fixture->filter(fn($_value, stdClass $item) => $item->character === 'a');
+        $result = $this->fixture->filter(fn ($_value, stdClass $item) => 'a' === $item->character);
         $this->assertInstanceOf(CollectionInterface::class, $result);
         $this->assertInstanceOf(Map::class, $result);
         $this->assertSame(1, $result->count());
@@ -559,7 +558,7 @@ class MapTest extends TestCase
     public function filterMapTest()
     {
         $result = $this->fixture->filterMap(
-            fn(string $value) => $value !== 'b' ? $value : null
+            fn (string $value) => 'b' !== $value ? $value : null
         );
         $this->assertInstanceOf(Map::class, $result);
         $this->assertSame(2, $result->count());
@@ -573,7 +572,7 @@ class MapTest extends TestCase
     {
         // The callback returns an empty string or null => the empty string will be added to the result
         $result = $this->fixture->filterMap(
-            fn(string $value): ?string => $value !== 'b' ? '' : null
+            fn (string $value): ?string => 'b' !== $value ? '' : null
         );
         $this->assertInstanceOf(Map::class, $result);
         $this->assertSame(2, $result->count());
@@ -619,7 +618,7 @@ class MapTest extends TestCase
     public function createWithInvalidArgumentTest()
     {
         $this->expectException(InvalidArgumentException::class);
-        new Map([new stdClass(),]);
+        new Map([new stdClass()]);
     }
 
     /**
@@ -715,10 +714,10 @@ class MapTest extends TestCase
     {
         $this->fixture = new Map(
             [
-                [(object)["keyObjectProperty" => 'c'], (object)["valueObjectProperty" => 30]],
-                [(object)["keyObjectProperty" => 'b'], (object)["valueObjectProperty" => 20]],
-                [(object)["keyObjectProperty" => 'a'], (object)["valueObjectProperty" => 10]],
-                [(object)["keyObjectProperty" => 'd'], (object)["valueObjectProperty" => 40]],
+                [(object) ['keyObjectProperty' => 'c'], (object) ['valueObjectProperty' => 30]],
+                [(object) ['keyObjectProperty' => 'b'], (object) ['valueObjectProperty' => 20]],
+                [(object) ['keyObjectProperty' => 'a'], (object) ['valueObjectProperty' => 10]],
+                [(object) ['keyObjectProperty' => 'd'], (object) ['valueObjectProperty' => 40]],
             ]
         );
 

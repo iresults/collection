@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Iresults\Collection;
@@ -31,7 +32,6 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      *
      * Values in the input Collections with numeric keys will be renumbered with incrementing keys starting from zero in the result Collection.
      *
-     * @param array $arguments
      * @return static
      */
     // public function merge(... $arguments): CollectionInterface;
@@ -42,7 +42,9 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      * The method returns a new Collection containing all the elements of the Collection after applying the callback function to each one.
      *
      * @template R
+     *
      * @param callable(V, K): R $callback Callback to apply
+     *
      * @return CollectionInterface<K, R>
      */
     public function map(callable $callback): CollectionInterface;
@@ -51,8 +53,10 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      * Reduce the elements of the Collection to a single value using the callback function
      *
      * @template R
+     *
      * @param callable(R, V, K): R $callback Callback to apply
      * @param R|null               $carry
+     *
      * @return R
      */
     public function reduce(callable $callback, $carry = null);
@@ -64,6 +68,7 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      * If the callback function returns true, the current value is returned into the result Collection. Keys are preserved.
      *
      * @param callable(V, K): bool $callback The callback function to use
+     *
      * @return CollectionInterface<K, V>
      */
     public function filter(callable $callback): CollectionInterface;
@@ -76,7 +81,9 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      * callback's result is NULL the entry will not be added to the result Collection. Keys are preserved.
      *
      * @template R
+     *
      * @param callable(V, K): R|null $callback The callback function to use
+     *
      * @return CollectionInterface<K, R>
      */
     public function filterMap(callable $callback): CollectionInterface;
@@ -88,15 +95,13 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      * If the callback function returns TRUE, the current value is returned. If no match is found NULL is returned.
      *
      * @param callable(V): bool $callback The callback function to use
+     *
      * @return V|null
      */
     public function find(callable $callback);
 
     /**
      * Join array elements with a string
-     *
-     * @param string $glue
-     * @return string
      */
     public function implode(string $glue = ''): string;
 
@@ -114,6 +119,7 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      * ```
      *
      * @param callable(V, V): int $callback
+     *
      * @return static
      */
     public function sort(callable $callback): CollectionInterface;
@@ -132,6 +138,7 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      * ```
      *
      * @param callable(K, K): int $callback
+     *
      * @return static
      */
     public function ksort(callable $callback): CollectionInterface;
@@ -140,7 +147,9 @@ interface CollectionInterface extends Countable, ArrayAccess, Traversable
      * Partition the Collection according to the result of the callback function
      *
      * @template R
+     *
      * @param callable(V, K): R $callback
+     *
      * @return MapInterface<R, V[]>
      */
     public function partition(callable $callback): MapInterface;

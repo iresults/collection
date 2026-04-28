@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Iresults\Collection\Tests\Unit;
@@ -9,9 +10,6 @@ use PHPUnit\Framework\TestCase;
 
 class PairTest extends TestCase
 {
-    /**
-     * @var Pair
-     */
     private Pair $fixture;
 
     protected function setUp(): void

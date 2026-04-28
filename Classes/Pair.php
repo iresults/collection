@@ -1,16 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Iresults\Collection;
 
+use ArrayAccess;
 use Iresults\Collection\Exception\InvalidArgumentTypeException;
 use Iresults\Collection\Exception\OutOfRangeException;
+use ReturnTypeWillChange;
 
 /**
  * @template L
  * @template R
  */
-class Pair implements \ArrayAccess
+class Pair implements ArrayAccess
 {
     /**
      * @var L
@@ -30,8 +33,6 @@ class Pair implements \ArrayAccess
 
     /**
      * Return the left value
-     *
-     * @return mixed
      */
     public function getLeft()
     {
@@ -56,8 +57,6 @@ class Pair implements \ArrayAccess
 
     /**
      * Return the `right` value
-     *
-     * @return mixed
      */
     public function getRight()
     {
@@ -85,35 +84,35 @@ class Pair implements \ArrayAccess
         return is_int($offset) && $offset >= 0 && $offset < 2;
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
-        if ($offset === 0) {
+        if (0 === $offset) {
             return $this->left;
-        } elseif ($offset === 1) {
+        } elseif (1 === $offset) {
             return $this->right;
         }
         throw $this->throwOffsetException($offset);
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
-        if ($offset === 0) {
+        if (0 === $offset) {
             $this->left = $value;
-        } elseif ($offset === 1) {
+        } elseif (1 === $offset) {
             $this->right = $value;
         } else {
             throw $this->throwOffsetException($offset);
         }
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
-        if ($offset === 0) {
+        if (0 === $offset) {
             $this->left = null;
-        } elseif ($offset === 1) {
+        } elseif (1 === $offset) {
             $this->right = null;
         } else {
             throw $this->throwOffsetException($offset);
@@ -121,7 +120,6 @@ class Pair implements \ArrayAccess
     }
 
     /**
-     * @param $offset
      * @return InvalidArgumentTypeException|OutOfRangeException
      */
     protected function throwOffsetException($offset)

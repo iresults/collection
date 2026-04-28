@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Iresults\Collection;
@@ -16,13 +17,11 @@ class Collection extends AbstractCollection
     /**
      * Split a string by string
      *
-     * @param string $delimiter
-     * @param string $input
      * @return static
      */
     public static function fromString(string $delimiter, string $input): CollectionInterface
     {
-        if ($input === '') {
+        if ('' === $input) {
             return new static();
         }
 

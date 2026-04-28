@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Iresults\Collection;
@@ -17,6 +18,7 @@ interface TypedCollectionInterface
      * The method returns a new Typed Collection containing all the elements of the collection after applying the callback function to each one.
      *
      * @param callable(V, K): V $callback Callback to apply
+     *
      * @return TypedCollectionInterface<K, V>
      */
     public function mapTyped(callable $callback): TypedCollectionInterface;
@@ -30,7 +32,9 @@ interface TypedCollectionInterface
      * The method returns a new Typed Collection.
      *
      * @template R
+     *
      * @param callable(V, K): R|null $callback The callback function to use
+     *
      * @return TypedCollectionInterface<K, R>
      */
     public function filterMapTyped(callable $callback): TypedCollectionInterface;

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Iresults\Collection;
@@ -8,9 +9,6 @@ use Iresults\Collection\Utility\TypeUtility;
 
 class TypedCollection extends AbstractTypedCollection
 {
-    /**
-     * @var string
-     */
     protected string $type;
 
     /**
@@ -23,10 +21,6 @@ class TypedCollection extends AbstractTypedCollection
 
     /**
      * Return a new instance with the given type and data
-     *
-     * @param string   $type
-     * @param iterable $data
-     * @return TypedCollection
      */
     public static function withTypeAndData(string $type, iterable $data): TypedCollection
     {
@@ -41,16 +35,13 @@ class TypedCollection extends AbstractTypedCollection
 
     /**
      * Return a new empty instance with the given type
-     *
-     * @param string $type
-     * @return TypedCollection
      */
     public static function withType(string $type): TypedCollection
     {
         return static::withTypeAndData($type, []);
     }
 
-    public function mapTyped(callable $callback, string $targetType = null): TypedCollectionInterface
+    public function mapTyped(callable $callback, ?string $targetType = null): TypedCollectionInterface
     {
         $target = static::withType($targetType ?? $this->type);
 

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Iresults\Collection;
@@ -9,6 +10,7 @@ use Iresults\Collection\Utility\TypeUtility;
 /**
  * @template T
  * @template K
+ *
  * @internal
  */
 abstract class AbstractTypedCollection extends AbstractCollection implements TypedCollectionInterface
@@ -23,7 +25,6 @@ abstract class AbstractTypedCollection extends AbstractCollection implements Typ
     /**
      * @param K $offset
      * @param T $value
-     * @return void
      */
     public function offsetSet($offset, $value): void
     {
@@ -32,7 +33,6 @@ abstract class AbstractTypedCollection extends AbstractCollection implements Typ
     }
 
     /**
-     * @param mixed ...$arguments
      * @return static
      */
     public function merge(...$arguments): CollectionInterface
@@ -64,8 +64,6 @@ abstract class AbstractTypedCollection extends AbstractCollection implements Typ
     }
 
     /**
-     * @param string $type
-     * @param mixed  $element
      * @throws InvalidArgumentTypeException
      */
     protected static function validateElementType(string $type, $element)

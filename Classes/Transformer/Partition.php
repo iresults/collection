@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Iresults\Collection\Transformer;
@@ -12,9 +13,11 @@ class Partition
      * @template K
      * @template V
      * @template R
+     *
      * @param iterable<K, V>    $collection
      * @param callable(V, K): R $callback
      * @param class-string      $targetClass
+     *
      * @return MapInterface<R, V[]>
      */
     public function apply(iterable $collection, callable $callback, string $targetClass): MapInterface
@@ -33,7 +36,7 @@ class Partition
         }
 
         /** @var MapInterface $result */
-        $result = $partitions->map(fn($partition) => new $targetClass($partition));
+        $result = $partitions->map(fn ($partition) => new $targetClass($partition));
 
         return $result;
     }

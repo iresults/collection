@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Iresults\Collection\Tests\Unit;
@@ -13,9 +14,6 @@ use PHPUnit\Framework\TestCase;
 
 class TypedCollectionTest extends TestCase
 {
-    /**
-     * @var TypedCollection
-     */
     protected TypedCollection $fixture;
 
     protected function setUp(): void
@@ -56,7 +54,7 @@ class TypedCollectionTest extends TestCase
      */
     public function mapTest()
     {
-        $result = $this->fixture->map(fn(Person $item) => strtoupper($item->getName()));
+        $result = $this->fixture->map(fn (Person $item) => strtoupper($item->getName()));
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(3, $result->count());
         $this->assertSame(['DANIEL', 'GERT', 'LOREN'], $result->getArrayCopy());
@@ -67,7 +65,7 @@ class TypedCollectionTest extends TestCase
      */
     public function mapTypedTest()
     {
-        $result = $this->fixture->mapTyped(fn(Person $item) => new Person(strtoupper($item->getName())));
+        $result = $this->fixture->mapTyped(fn (Person $item) => new Person(strtoupper($item->getName())));
         $this->assertInstanceOf(TypedCollection::class, $result);
         $this->assertSame(3, $result->count());
         $this->assertSame('Daniel,Gert,Loren', $this->fixture->implode(','));
@@ -78,7 +76,7 @@ class TypedCollectionTest extends TestCase
      */
     public function filterTest()
     {
-        $result = $this->fixture->filter(fn(Person $item) => $item->getName() === 'Gert');
+        $result = $this->fixture->filter(fn (Person $item) => 'Gert' === $item->getName());
         $this->assertInstanceOf(TypedCollection::class, $result);
         $this->assertSame(1, $result->count());
         $this->assertEquals([1 => new Person('Gert')], $result->getArrayCopy());

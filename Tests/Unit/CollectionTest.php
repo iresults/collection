@@ -1,18 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Iresults\Collection\Tests\Unit;
 
 use Iresults\Collection\Collection;
-use Iresults\Collection\Map;
 use PHPUnit\Framework\TestCase;
+
 use function array_values;
 
 class CollectionTest extends TestCase
 {
-    /**
-     * @var Collection
-     */
     protected Collection $fixture;
 
     protected function setUp(): void
@@ -40,7 +38,7 @@ class CollectionTest extends TestCase
      */
     public function mapTest()
     {
-        $result = $this->fixture->map(fn($item) => strtoupper($item));
+        $result = $this->fixture->map(fn ($item) => strtoupper($item));
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(3, $result->count());
         $this->assertSame(['A', 'B', 'C'], $result->getArrayCopy());
@@ -51,7 +49,7 @@ class CollectionTest extends TestCase
      */
     public function filterTest()
     {
-        $result = $this->fixture->filter(fn($item) => $item === 'a');
+        $result = $this->fixture->filter(fn ($item) => 'a' === $item);
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(1, $result->count());
         $this->assertSame(['a'], $result->getArrayCopy());
@@ -63,7 +61,7 @@ class CollectionTest extends TestCase
     public function filterMapTest()
     {
         $result = $this->fixture->filterMap(
-            fn(string $item) => $item !== 'b' ? $item : null
+            fn (string $item) => 'b' !== $item ? $item : null
         );
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(2, $result->count());
@@ -80,7 +78,7 @@ class CollectionTest extends TestCase
     {
         // The callback returns an empty string or null => the empty string will be added to the result
         $result = $this->fixture->filterMap(
-            fn(string $value): ?string => $value !== 'b' ? '' : null
+            fn (string $value): ?string => 'b' !== $value ? '' : null
         );
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(2, $result->count());
@@ -93,7 +91,7 @@ class CollectionTest extends TestCase
     public function findTest()
     {
         $this->fixture = new Collection([10, 20, 30, 40]);
-        $result = $this->fixture->find(fn($item) => $item > 20);
+        $result = $this->fixture->find(fn ($item) => $item > 20);
         $this->assertSame(30, $result);
     }
 
@@ -103,7 +101,7 @@ class CollectionTest extends TestCase
     public function findNoneTest()
     {
         $this->fixture = new Collection([10, 20, 30, 40]);
-        $result = $this->fixture->find(fn($item) => $item > 40);
+        $result = $this->fixture->find(fn ($item) => $item > 40);
         $this->assertNull($result);
     }
 
@@ -201,10 +199,10 @@ class CollectionTest extends TestCase
      */
     public function sortObjectsTest()
     {
-        $o1 = (object)['char' => 'x'];
-        $o2 = (object)['char' => 'g'];
-        $o3 = (object)['char' => 'h'];
-        $o4 = (object)['char' => 'a'];
+        $o1 = (object) ['char' => 'x'];
+        $o2 = (object) ['char' => 'g'];
+        $o3 = (object) ['char' => 'h'];
+        $o4 = (object) ['char' => 'a'];
         $this->fixture = new Collection([$o1, $o2, $o3, $o4]);
 
         $result = $this->fixture->sort(
@@ -230,10 +228,10 @@ class CollectionTest extends TestCase
      */
     public function kortTest()
     {
-        $o1 = (object)['value' => bin2hex(random_bytes(2))];
-        $o2 = (object)['value' => bin2hex(random_bytes(2))];
-        $o3 = (object)['value' => bin2hex(random_bytes(2))];
-        $o4 = (object)['value' => bin2hex(random_bytes(2))];
+        $o1 = (object) ['value' => bin2hex(random_bytes(2))];
+        $o2 = (object) ['value' => bin2hex(random_bytes(2))];
+        $o3 = (object) ['value' => bin2hex(random_bytes(2))];
+        $o4 = (object) ['value' => bin2hex(random_bytes(2))];
         $this->fixture = new Collection(
             [
                 'x' => $o1,
@@ -266,10 +264,10 @@ class CollectionTest extends TestCase
      */
     public function ksortNumericTest()
     {
-        $o1 = (object)['value' => bin2hex(random_bytes(2))];
-        $o2 = (object)['value' => bin2hex(random_bytes(2))];
-        $o3 = (object)['value' => bin2hex(random_bytes(2))];
-        $o4 = (object)['value' => bin2hex(random_bytes(2))];
+        $o1 = (object) ['value' => bin2hex(random_bytes(2))];
+        $o2 = (object) ['value' => bin2hex(random_bytes(2))];
+        $o3 = (object) ['value' => bin2hex(random_bytes(2))];
+        $o4 = (object) ['value' => bin2hex(random_bytes(2))];
         $this->fixture = new Collection(
             [
                 100 => $o1,

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Iresults\Collection;
@@ -11,6 +12,7 @@ use Iresults\Collection\Traits\PartitionTrait;
 use Iresults\Collection\Traits\ReduceTrait;
 use Iresults\Collection\Utility\TypeUtility;
 use IteratorAggregate;
+use ReturnTypeWillChange;
 
 /**
  * Abstract base collection container
@@ -27,8 +29,6 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
 
     /**
      * The items managed by this collection
-     *
-     * @var array
      */
     protected array $items = [];
 
@@ -37,8 +37,6 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
      *
      * This constructor is not allowed to be called directly. So `new SubCollection()` is denied *unless*
      * `SubCollection` explicitly defines a public constructor method (like `BaseTypedCollection` does)
-     *
-     * @param iterable $items
      */
     protected function __construct(iterable $items = [])
     {
@@ -46,7 +44,6 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
     }
 
     /**
-     * @param mixed ...$arguments
      * @return static
      */
     public function merge(...$arguments): CollectionInterface
@@ -80,7 +77,7 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
         return isset($this->items[$offset]);
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->items[$offset];
@@ -107,7 +104,6 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
     }
 
     /**
-     * @param callable $callback
      * @return static
      */
     public function sort(callable $callback): CollectionInterface

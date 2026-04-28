@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Iresults\Collection;
@@ -15,6 +16,7 @@ interface MapInterface extends CollectionInterface
      * Create a new map with the given pairs
      *
      * @param Pair<K, V>[]|array<K, V> $pairs
+     *
      * @return MapInterface<K,V>
      */
     public static function withPairs(...$pairs): MapInterface;
@@ -30,7 +32,6 @@ interface MapInterface extends CollectionInterface
      * Return if the given key exists
      *
      * @param string|K $keyObject Key object to lookup or it's hash
-     * @return bool
      */
     public function exists($keyObject): bool;
 
@@ -38,6 +39,7 @@ interface MapInterface extends CollectionInterface
      * Return the value for the given key
      *
      * @param string|K $keyObject Key object to lookup or it's hash
+     *
      * @return V|null
      */
     public function get($keyObject);
@@ -46,7 +48,7 @@ interface MapInterface extends CollectionInterface
      * Set the value for the given key
      *
      * @param string|K $keyObject Key object to lookup or it's hash
-     * @param V               $value
+     * @param V        $value
      */
     public function set($keyObject, $value);
 
@@ -54,6 +56,7 @@ interface MapInterface extends CollectionInterface
      * Remove the value for the given key from the Map and return it
      *
      * @param string|K $keyObject Key object to lookup or it's hash
+     *
      * @return V|null
      */
     public function remove($keyObject);
@@ -65,7 +68,6 @@ interface MapInterface extends CollectionInterface
      * If the callback function returns true, the current value is returned. If no match is found NULL is returned.
      *
      * @param callable $callback The callback function to use
-     * @return Pair|null
      */
     public function findPair(callable $callback): ?Pair;
 }

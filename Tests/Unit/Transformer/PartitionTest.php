@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Iresults\Collection\Tests\Unit\Transformer;
@@ -27,12 +28,10 @@ class PartitionTest extends TestCase
 
     /**
      * @dataProvider getIterableTestData
-     * @param iterable $testMap
-     * @return void
      */
     public function testPartitionCollection(iterable $testMap): void
     {
-        $result = $this->fixture->apply($testMap, fn($v) => $v % 2, Collection::class);
+        $result = $this->fixture->apply($testMap, fn ($v) => $v % 2, Collection::class);
 
         $this->assertSame([1 => 1, 0 => 0], $result->getKeys());
         $partition1 = $result->get(1);
@@ -90,7 +89,7 @@ class PartitionTest extends TestCase
                 'c' => -3,
                 'd' => 4,
             ],
-            fn($v) => $v > 0,
+            fn ($v) => $v > 0,
             Collection::class
         );
 

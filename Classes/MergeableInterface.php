@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Iresults\Collection;
@@ -18,7 +19,6 @@ interface MergeableInterface
      * Values in the input Collections with numeric keys will be renumbered with incrementing keys starting from zero in the result Collection.
      *
      * @param array $arguments
-     * @return CollectionInterface
      */
     public function merge(...$arguments): CollectionInterface;
 }

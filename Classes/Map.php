@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Iresults\Collection;
@@ -11,7 +12,9 @@ use Iresults\Collection\Traits\MapTrait;
 use Iresults\Collection\Traits\PartitionTrait;
 use Iresults\Collection\Traits\ReduceTrait;
 use Iterator;
+use ReturnTypeWillChange;
 use UnexpectedValueException;
+
 use function count;
 use function current;
 use function gettype;
@@ -32,6 +35,7 @@ use function uasort;
  *
  * @template K
  * @template V
+ *
  * @implements MapInterface<K,V>
  */
 class Map implements Iterator, MapInterface
@@ -51,15 +55,11 @@ class Map implements Iterator, MapInterface
 
     /**
      * Map of the object hash to the value object
-     *
-     * @var array
      */
     private array $hashToValueMap = [];
 
     /**
      * Map constructor
-     *
-     * @param array $objects
      */
     public function __construct(array $objects = [])
     {
@@ -93,7 +93,7 @@ class Map implements Iterator, MapInterface
         return $this->hashToKeyObjectMap;
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function current()
     {
         $currentKey = $this->hashKey();
@@ -104,13 +104,13 @@ class Map implements Iterator, MapInterface
         return null;
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function next()
     {
         next($this->hashToKeyObjectMap);
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function key()
     {
         return current($this->hashToKeyObjectMap);
@@ -123,7 +123,7 @@ class Map implements Iterator, MapInterface
 
     public function valid(): bool
     {
-        return current($this->hashToKeyObjectMap) !== false || key($this->hashToKeyObjectMap) !== null;
+        return false !== current($this->hashToKeyObjectMap) || null !== key($this->hashToKeyObjectMap);
     }
 
     public function rewind(): void
@@ -141,7 +141,7 @@ class Map implements Iterator, MapInterface
         return $this->offsetExists($keyObject);
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if (!$this->offsetExists($offset)) {
@@ -244,7 +244,6 @@ class Map implements Iterator, MapInterface
 
     /**
      * @param string|object $variable
-     * @return string
      */
     protected function hash($variable): string
     {
@@ -252,7 +251,7 @@ class Map implements Iterator, MapInterface
             return $variable;
         }
         if (is_scalar($variable)) {
-            return (string)$variable;
+            return (string) $variable;
         }
         if (is_object($variable)) {
             return spl_object_hash($variable);
@@ -265,6 +264,7 @@ class Map implements Iterator, MapInterface
 
     /**
      * @param array|Pair $objectAndValue
+     *
      * @return void
      */
     private static function assertPair($objectAndValue)
