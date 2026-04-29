@@ -57,7 +57,7 @@ class Map implements Iterator, MapInterface, ArrayAccess
     final public function __construct(array|Pair ...$objects)
     {
         foreach ($objects as $objectAndValue) {
-            $this->assertPair($objectAndValue);
+            $this->assertPairConstructorArgument($objectAndValue);
             if ($objectAndValue instanceof Pair) {
                 $this->set($objectAndValue->key, $objectAndValue->value);
             } else {
@@ -120,7 +120,7 @@ class Map implements Iterator, MapInterface, ArrayAccess
 
     public function offsetExists(mixed $offset): bool
     {
-        return isset($this->hashToKeyMap[$this->hash($offset)]);
+        return $this->exists($offset);
     }
 
     public function exists(mixed $key): bool
@@ -331,22 +331,44 @@ class Map implements Iterator, MapInterface, ArrayAccess
      *
      * @phpstan-assert Pair<K,V>|array{0:K,1:V} $objectAndValue
      */
-    private static function assertPair($objectAndValue): void
+    private static function assertPairConstructorArgument(mixed $objectAndValue): void
     {
         if ($objectAndValue instanceof Pair) {
             return;
         }
+
+        $exceptionMessage = 'Constructor argument must be an array of pairs.';
         if (!is_array($objectAndValue)) {
             throw new InvalidArgumentException(
-                'Constructor argument must be an array of paris',
+                sprintf(
+                    '%s %s given',
+                    $exceptionMessage,
+                    get_debug_type($objectAndValue)
+                ),
                 1442827041
             );
         }
-        if (!array_key_exists(0, $objectAndValue) || !array_key_exists(1, $objectAndValue)) {
+
+        $hasKey0 = array_key_exists(0, $objectAndValue);
+        $hasKey1 = array_key_exists(1, $objectAndValue);
+        if ($hasKey0 && $hasKey1) {
+            return;
+        }
+
+        if (!$hasKey0 && !$hasKey1) {
             throw new InvalidArgumentException(
-                'Constructor argument must be an array of pairs',
-                1442827041
+                $exceptionMessage . ' Array does not contain keys 0 and 1',
+                1442827042
             );
         }
+
+        throw new InvalidArgumentException(
+            sprintf(
+                '%s Array does not contain key %d',
+                $exceptionMessage,
+                !$hasKey0 ? 0 : 1
+            ),
+            1442827044
+        );
     }
 }

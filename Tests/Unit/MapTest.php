@@ -11,6 +11,7 @@ use Iresults\Collection\Map;
 use Iresults\Collection\Pair;
 use Iresults\Collection\Tests\Unit\Fixtures\Person;
 use Iresults\Collection\Tests\Unit\Fixtures\PersonalInformation;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -547,19 +548,23 @@ final class MapTest extends TestCase
     }
 
     #[Test]
-    public function createWithInvalidArgumentTest(): void
+    #[DataProvider('createWithInvalidArgumentDataProvider')]
+    public function createWithInvalidArgumentTest(mixed $input): void
     {
         $this->expectException(InvalidArgumentException::class);
-        // @phpstan-ignore argument.type
-        new Map([new stdClass()]);
+        new Map($input);
     }
 
-    #[Test]
-    public function createWithInvalidArgument2Test(): void
+    /**
+     * @return array<non-empty-string, non-empty-list<mixed>>
+     */
+    public static function createWithInvalidArgumentDataProvider(): array
     {
-        $this->expectException(InvalidArgumentException::class);
-        // @phpstan-ignore argument.type
-        new Map([[]]);
+        return [
+            'empty pair'                      => [[]],
+            'incomplete pair (missing key 1)' => [[0 => 'hello']],
+            'incomplete pair (missing key 0)' => [[1 => 'world']],
+        ];
     }
 
     #[Test]
