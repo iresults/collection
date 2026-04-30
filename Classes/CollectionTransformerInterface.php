@@ -29,10 +29,10 @@ interface CollectionTransformerInterface
      *
      * @template R
      *
-     * @param callable(R|null, V, K): R $callback Callback to apply
-     * @param R|null                    $carry
+     * @param callable(($carry is null ? R|null : R), V, K): R $callback Callback to apply
+     * @param R|null                                           $carry
      *
-     * @return R|null
+     * @return ($carry is null ? R|null : R)
      */
     public function reduce(callable $callback, mixed $carry = null): mixed;
 

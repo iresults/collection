@@ -436,7 +436,6 @@ final class MapTest extends TestCase
             function ($carry, string $value, stdClass $keyObject) {
                 /* @var object $keyObject */
                 assert($value === $keyObject->character);
-                assert(null !== $carry);
 
                 return $carry . '/' . $value . strtoupper($keyObject->character);
             },
