@@ -22,7 +22,7 @@ interface CollectionInterface extends CollectionTransformerInterface, Countable,
     /**
      * Return an array copy of the `Collection`'s data
      *
-     * @return V[]
+     * @return list<V>
      */
     public function getArrayCopy(): array;
 

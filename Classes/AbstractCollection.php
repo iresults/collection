@@ -28,7 +28,7 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
     /**
      * The items managed by this collection
      *
-     * @var array<int,V>
+     * @var list<V>
      */
     protected array $items = [];
 
