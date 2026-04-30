@@ -6,6 +6,7 @@ namespace Iresults\Collection;
 
 use ArrayIterator;
 use BadMethodCallException;
+use InvalidArgumentException;
 use Iresults\Collection\Traits\ReduceTrait;
 use Iresults\Collection\Transformer\Partition as PartitionTransformer;
 use Iresults\Collection\Utility\TypeUtility;
@@ -153,6 +154,39 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
     }
 
     /**
+     * Map and flatten elements of the `Collection` using a callback function
+     *
+     * Iterates over each value in the `Collection` passing them to the callback
+     * function.
+     * The callback function must return a iterable result. The result's items
+     * will be appended to items of the returned `Collection`
+     *
+     * @template R
+     *
+     * @param callable(V): iterable<R> $closure
+     *
+     * @return static<R>
+     */
+    public function flatMap(callable $closure): static
+    {
+        /** @var R[] $flattened */
+        $flattened = [];
+
+        foreach ($this->items as $item) {
+            $result = $closure($item);
+            if (!is_iterable($result)) {
+                throw new InvalidArgumentException(
+                    'Given callable did not return an iterable'
+                );
+            }
+
+            $flattened = array_merge($flattened, array_values([...$result]));
+        }
+
+        return $this->buildStatic($flattened);
+    }
+
+    /**
      * @template R
      *
      * @param callable(V, int): R $callback
@@ -192,7 +226,11 @@ abstract class AbstractCollection implements IteratorAggregate, CollectionInterf
      * to allow the subclasses to specify a type, we must not enforce this
      * signature (i.e. we must not add the signature to the `CollectionInterface`)
      *
-     * @param array<int|string,V> $items
+     * @template T
+     *
+     * @param array<int|string,T> $items
+     *
+     * @return static<T>
      */
     private static function buildStatic(array $items): static
     {

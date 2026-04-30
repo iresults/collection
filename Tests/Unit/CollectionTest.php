@@ -204,4 +204,40 @@ final class CollectionTest extends TestCase
             $result->getArrayCopy()
         );
     }
+
+    #[Test]
+    public function flatMapTest(): void
+    {
+        $o1 = (object) ['chars' => ['a', 'b']];
+        $o2 = (object) ['chars' => ['c', 'd']];
+        $o3 = (object) ['chars' => ['e', 'f', 'g']];
+
+        /** @var Collection<object{chars:string[]}> $fixture */
+        $fixture = new Collection($o1, $o2, $o3);
+
+        $result = $fixture->flatMap(fn (object $o) => $o->chars);
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertSame(
+            ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            $result->getArrayCopy()
+        );
+    }
+
+    #[Test]
+    public function flatMapShouldIgnoreKeysTest(): void
+    {
+        $o1 = (object) ['chars' => ['i1' => 'a', 'i2' => 'b']];
+        $o2 = (object) ['chars' => ['i1' => 'c', 'i2' => 'd']];
+        $o3 = (object) ['chars' => ['i1' => 'e', 'i2' => 'f', 'i3' => 'g']];
+
+        /** @var Collection<object{chars:string[]}> $fixture */
+        $fixture = new Collection($o1, $o2, $o3);
+
+        $result = $fixture->flatMap(fn (object $o) => $o->chars);
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertSame(
+            ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            $result->getArrayCopy()
+        );
+    }
 }
