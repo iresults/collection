@@ -68,12 +68,12 @@ class Map implements Iterator, MapInterface, ArrayAccess
 
     public function getValues(): array
     {
-        return $this->hashToValueMap;
+        return array_values($this->hashToValueMap);
     }
 
     public function getKeys(): array
     {
-        return $this->hashToKeyMap;
+        return array_values($this->hashToKeyMap);
     }
 
     /**

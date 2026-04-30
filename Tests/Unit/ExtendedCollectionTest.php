@@ -14,8 +14,6 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
-use function array_values;
-
 class ExtendedCollectionTest extends TestCase
 {
     private PersonCollection $fixture;
@@ -96,7 +94,7 @@ class ExtendedCollectionTest extends TestCase
         );
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertSame(2, $result->count());
-        $this->assertEquals(['', ''], array_values($result->getArrayCopy()));
+        $this->assertEquals(['', ''], $result->getArrayCopy());
     }
 
     #[Test]

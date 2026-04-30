@@ -15,14 +15,14 @@ interface MapInterface extends CollectionTransformerInterface
     /**
      * Return the array of values
      *
-     * @return V[]
+     * @return list<V>
      */
     public function getValues(): array;
 
     /**
      * Return the array of keys
      *
-     * @return K[]
+     * @return list<K>
      */
     public function getKeys(): array;
 
